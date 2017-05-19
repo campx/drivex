@@ -1,0 +1,7 @@
+/usr/include/fuse/fuse.h:31:1: warning: #includes are not sorted properly [llvm-include-order]
+/usr/include/fuse/fuse_common.h:50:2: warning: consider replacing 'unsigned long' with 'uint64' [google-runtime-int]
+/usr/include/fuse/fuse_opt.h:84:2: warning: consider replacing 'unsigned long' with 'uint64' [google-runtime-int]
+/usr/include/fuse/fuse_opt.h:128:30: warning: macro replacement list should be enclosed in parentheses [misc-macro-parentheses]
+/usr/include/fuse/fuse_opt.h:136:30: warning: macro replacement list should be enclosed in parentheses [misc-macro-parentheses]
+/usr/include/fuse/fuse_opt.h:144:27: warning: macro replacement list should be enclosed in parentheses [misc-macro-parentheses]
+/usr/include/fuse/fuse_opt.h:152:30: warning: macro replacement list should be enclosed in parentheses [misc-macro-parentheses]
