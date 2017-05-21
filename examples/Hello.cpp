@@ -99,7 +99,7 @@ int Hello::read(const char* path,
     return size;
 }
 
-} // namespace fuse
+} // namespace cppfuse
 
 int main(int argc, char* argv[])
 {

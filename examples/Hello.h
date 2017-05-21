@@ -9,7 +9,7 @@ namespace cppfuse
 class Hello : public Fuse
 {
 public:
-    Hello(fs::path mountpoint);
+    explicit Hello(fs::path mountpoint);
     int getattr(const char* path, struct stat* stbuf) override;
     int readdir(const char* path,
                 void* buf,
@@ -28,4 +28,4 @@ private:
     std::string hello_path = "/hello"; /** sole path in the file system */
 };
 
-} // namespace fuse
+} // namespace cppfuse

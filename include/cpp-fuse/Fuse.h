@@ -17,7 +17,7 @@ namespace fs = std::experimental::filesystem;
 class Fuse
 {
 public:
-    Fuse(fs::path mountpoint);
+    explicit Fuse(fs::path mountpoint);
     virtual ~Fuse();
 
     bool is_mounted() const;
@@ -45,4 +45,4 @@ private:
     fuse* fuse_;
 };
 
-} // namespace fuse
+} // namespace cppfuse
