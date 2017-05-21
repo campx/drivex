@@ -34,3 +34,4 @@ notification:
     email: true
 os:
 - linux
+- osx
