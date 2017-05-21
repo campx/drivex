@@ -6,9 +6,6 @@ compiler: g++
 install:
     - if [ $TRAVIS_OS_NAME == osx ]; then 
            brew update 
-        && brew unlink  osxfuse 
-        && brew install osxfuse 
-        && brew link --force osxfuse
         && brew unlink  cmake
         && brew install cmake 
         && brew link --force cmake;
