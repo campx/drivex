@@ -8,10 +8,7 @@ install:
            brew update 
         && brew unlink  cmake
         && brew install cmake 
-        && brew link --force cmake
-        && brew unlink  libfuse
-        && brew install libfuse 
-        && brew link --force libfuse;
+        && brew link --force cmake;
       fi
 script: 
     - if [ $TRAVIS_OS_NAME == osx ]; then 
