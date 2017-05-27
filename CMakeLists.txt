@@ -6,11 +6,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FILE_OFFSET_BITS=64")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) #create compilation database for clang
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(FUSE REQUIRED fuse)
-if( FUSE_FOUND )
-    include_directories(${FUSE_INCLUDE_DIRS})
-    message(STATUS "Using FUSE ${FUSE_VERSION}")
+if (APPLE)
+	# find fuse
+else()
+	find_package(PkgConfig REQUIRED)
+	pkg_search_module(FUSE REQUIRED fuse)
+	if( FUSE_FOUND )
+		include_directories(${FUSE_INCLUDE_DIRS})
+		message(STATUS "Using FUSE ${FUSE_VERSION}")
+	endif()
 endif()
 
 include_directories(${cpp-fuse_SOURCE_DIR}/include)
