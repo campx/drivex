@@ -1,3 +1,4 @@
+
 sudo: required
 services: 
     - docker
@@ -6,6 +7,7 @@ compiler: g++
 install:
     - if [ $TRAVIS_OS_NAME == osx ]; then 
            brew update 
+        && brew search
         && brew unlink  cmake
         && brew install cmake 
         && brew link --force cmake;
