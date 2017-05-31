@@ -5,97 +5,75 @@ namespace cppfuse
 
 Hello::Hello(fs::path mountpoint) : Fuse(mountpoint) {}
 
-int Hello::getattr(const char* path, struct stat* stbuf)
+Stat Hello::getattr(const fs::path& path)
 {
-    int res = 0;
-
-    memset(stbuf, 0, sizeof(struct stat));
-    if (strcmp(path, "/") == 0)
+    Stat st;
+    if (path == "/")
     {
-        stbuf->st_mode = S_IFDIR | 0755;
-        stbuf->st_nlink = 2;
+        st.st_mode = S_IFDIR | 0755;
+        st.st_nlink = 2;
     }
     else if (path == hello_path)
     {
-        stbuf->st_mode = S_IFREG | 0444;
-        stbuf->st_nlink = 1;
-        stbuf->st_size = hello_str.size();
+        st.st_mode = S_IFREG | 0444;
+        st.st_nlink = 1;
+        st.st_size = hello_str.size();
     }
     else
     {
-        res = -ENOENT;
+        auto ec = std::make_error_code(std::errc::no_such_file_or_directory);
+        throw fs::filesystem_error("No such file or directory", ec);
     }
 
-    return res;
+    return st;
 }
 
-int Hello::readdir(const char* path,
-                   void* buf,
-                   fuse_fill_dir_t filler,
-                   off_t offset,
-                   struct fuse_file_info* fi)
+std::vector<fs::path> Hello::readdir(const fs::path& path, FileInfo& info)
 {
-    (void)offset;
-    (void)fi;
-
-    if (strcmp(path, "/") != 0)
-    {
-        return -ENOENT;
-    }
-
-    auto pos = hello_path.data();
-    std::advance(pos, 1);
-    filler(buf, ".", nullptr, 0);
-    filler(buf, "..", nullptr, 0);
-    filler(buf, pos, nullptr, 0);
-
-    return 0;
+    std::vector<fs::path> result;
+    result.push_back(fs::path("."));
+    result.push_back(fs::path(".."));
+    result.push_back(hello_path.filename());
+    return result;
 }
 
-int Hello::open(const char* path, struct fuse_file_info* fi)
+void Hello::open(const fs::path& path, FileInfo& info)
 {
     if (path != hello_path)
     {
-        return -ENOENT;
+        auto ec = std::make_error_code(std::errc::no_such_file_or_directory);
+        throw fs::filesystem_error("No such file or directory", ec);
     }
-
-    if ((fi->flags & 3) != O_RDONLY)
+    else if ((info.flags & 3) != O_RDONLY)
     {
-        return -EACCES;
+        auto ec = std::make_error_code(std::errc::permission_denied);
+        throw fs::filesystem_error("Permission denied", ec);
     }
-
-    return 0;
 }
 
-int Hello::read(const char* path,
-                char* buf,
-                size_t size,
-                off_t offset,
-                struct fuse_file_info* fi)
+int Hello::read(const fs::path& path,
+                uint64_t offset,
+                string_view& buffer,
+                FileInfo& info)
 {
-    off_t len;
-    (void)fi;
+    int size = buffer.size();
     if (path != hello_path)
     {
-        return -ENOENT;
+        auto ec = std::make_error_code(std::errc::no_such_file_or_directory);
+        throw fs::filesystem_error("No such file or directory", ec);
     }
-
-    len = hello_str.size();
+    auto len = hello_str.size();
     if (offset < len)
     {
-        if (static_cast<off_t>(offset + size) > len)
+        if (offset + size > len)
         {
             size = len - offset;
         }
         auto pos = hello_str.data();
         std::advance(pos, offset);
-        memcpy(buf, pos, size);
+        auto output = (void*)(buffer.data());
+        memcpy(output, pos, size);
     }
-    else
-    {
-        size = 0;
-    }
-
     return size;
 }
 

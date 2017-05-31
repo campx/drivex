@@ -2,6 +2,7 @@
 #define FUSE_USE_VERSION 26
 #include <errno.h>
 #include <experimental/filesystem>
+#include <experimental/string_view>
 #include <fcntl.h>
 #include <fuse.h>
 #include <iterator>
@@ -13,6 +14,9 @@ namespace cppfuse
 {
 
 namespace fs = std::experimental::filesystem;
+using string_view = std::experimental::fundamentals_v1::string_view;
+using Stat = struct stat;
+using FileInfo = struct fuse_file_info;
 
 class Fuse
 {
@@ -25,18 +29,17 @@ public:
     void unmount();
     void run();
 
-    virtual int getattr(const char* path, struct stat* stbuf);
-    virtual int readdir(const char* path,
-                        void* buf,
-                        fuse_fill_dir_t filler,
-                        off_t offset,
-                        struct fuse_file_info* fi);
-    virtual int open(const char* path, struct fuse_file_info* fi);
-    virtual int read(const char* path,
-                     char* buf,
-                     size_t size,
-                     off_t offset,
-                     struct fuse_file_info* fi);
+    virtual Stat getattr(const fs::path& path);
+
+    virtual std::vector<fs::path>
+    readdir(const fs::path& path, FileInfo& info);
+
+    virtual void open(const fs::path& path, FileInfo& info);
+
+    virtual int read(const fs::path& path,
+                     uint64_t offset,
+                     string_view& buffer,
+                     FileInfo& info);
 
 private:
     bool is_mounted_;

@@ -1,4 +1,5 @@
 #include <cpp-fuse/Fuse.h>
+#include <iostream>
 
 namespace cppfuse
 {
@@ -12,8 +13,18 @@ Fuse* get_fuse_from_context()
 
 static int fuse_getattr(const char* path, struct stat* stbuf)
 {
+    int result = 0;
+    memset(stbuf, 0, sizeof(struct stat));
     auto fuse = get_fuse_from_context();
-    return fuse->getattr(path, stbuf);
+    try
+    {
+        *stbuf = fuse->getattr(path);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
 }
 
 static int fuse_readdir(const char* path,
@@ -23,13 +34,35 @@ static int fuse_readdir(const char* path,
                         struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
-    return fuse->readdir(path, buf, filler, offset, fi);
+    auto result = 0;
+    try
+    {
+        auto entries = fuse->readdir(fs::path(path), *fi);
+        for (const auto& entry : entries)
+        {
+            filler(buf, std::string(entry).c_str(), nullptr, 0);
+        }
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
 }
 
 static int fuse_open(const char* path, struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
-    return fuse->open(path, fi);
+    auto result = 0;
+    try
+    {
+        fuse->open(fs::path(path), *fi);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
 }
 
 static int fuse_read(const char* path,
@@ -39,7 +72,17 @@ static int fuse_read(const char* path,
                      struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
-    return fuse->read(path, buf, size, offset, fi);
+    auto buffer = string_view(buf, size);
+    int result = 0;
+    try
+    {
+        result = fuse->read(fs::path(path), offset, buffer, *fi);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
 }
 
 Fuse::Fuse(fs::path mountpoint)
@@ -85,26 +128,36 @@ void Fuse::unmount()
     }
 }
 
-int Fuse::getattr(const char* path, struct stat* stbuf) { return -ENOSYS; }
-
-int Fuse::readdir(const char* path,
-                  void* buf,
-                  fuse_fill_dir_t filler,
-                  off_t offset,
-                  struct fuse_file_info* fi)
+Stat Fuse::getattr(const fs::path& path)
 {
-    return -ENOSYS;
+    auto ec = std::make_error_code(std::errc::function_not_supported);
+    throw fs::filesystem_error("getattr is unsupported in this filesystem",
+                               ec);
+    return Stat();
 }
 
-int Fuse::open(const char* path, struct fuse_file_info* fi) { return -ENOSYS; }
-
-int Fuse::read(const char* path,
-               char* buf,
-               size_t size,
-               off_t offset,
-               struct fuse_file_info* fi)
+std::vector<fs::path> Fuse::readdir(const fs::path& path, FileInfo& info)
 {
-    return -ENOSYS;
+    auto ec = std::make_error_code(std::errc::function_not_supported);
+    throw fs::filesystem_error("readdir is unsupported in this filesystem",
+                               ec);
+    return std::vector<fs::path>{};
+}
+
+void Fuse::open(const fs::path& path, FileInfo& info)
+{
+    auto ec = std::make_error_code(std::errc::function_not_supported);
+    throw fs::filesystem_error("open is unsupported in this filesystem", ec);
+}
+
+int Fuse::read(const fs::path& path,
+               uint64_t offset,
+               string_view& buffer,
+               FileInfo& info)
+{
+    auto ec = std::make_error_code(std::errc::function_not_supported);
+    throw fs::filesystem_error("read is unsupported in this filesystem", ec);
+    return 0;
 }
 
 } // namespace cppfuse

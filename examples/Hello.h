@@ -10,22 +10,21 @@ class Hello : public Fuse
 {
 public:
     explicit Hello(fs::path mountpoint);
-    int getattr(const char* path, struct stat* stbuf) override;
-    int readdir(const char* path,
-                void* buf,
-                fuse_fill_dir_t filler,
-                off_t offset,
-                struct fuse_file_info* fi) override;
-    int open(const char* path, struct fuse_file_info* fi) override;
-    int read(const char* path,
-             char* buf,
-             size_t size,
-             off_t offset,
-             struct fuse_file_info* fi) override;
+    Stat getattr(const fs::path& path) override;
+
+    std::vector<fs::path>
+    readdir(const fs::path& path, FileInfo& info) override;
+
+    void open(const fs::path& path, FileInfo& info) override;
+
+    int read(const fs::path& path,
+             uint64_t offset,
+             string_view& buffer,
+             FileInfo& info) override;
 
 private:
     std::string hello_str = "Hello, world!"; /** file contents */
-    std::string hello_path = "/hello"; /** sole path in the file system */
+    fs::path hello_path = "/hello"; /** sole path in the file system */
 };
 
 } // namespace cppfuse
