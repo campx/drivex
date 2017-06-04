@@ -52,8 +52,8 @@ void Hello::open(const fs::path& path, FileInfo& info)
 }
 
 int Hello::read(const fs::path& path,
-                uint64_t offset,
                 string_view& buffer,
+                uint64_t offset,
                 FileInfo& info)
 {
     int size = buffer.size();

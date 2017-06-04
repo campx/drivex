@@ -18,8 +18,8 @@ public:
     void open(const fs::path& path, FileInfo& info) override;
 
     int read(const fs::path& path,
-             uint64_t offset,
              string_view& buffer,
+             uint64_t offset,
              FileInfo& info) override;
 
 private:
