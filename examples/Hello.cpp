@@ -30,6 +30,8 @@ Stat Hello::getattr(const fs::path& path)
 
 std::vector<fs::path> Hello::readdir(const fs::path& path, FileInfo& info)
 {
+    (void)path;
+    (void)info;
     std::vector<fs::path> result;
     result.push_back(fs::path("."));
     result.push_back(fs::path(".."));
@@ -56,6 +58,7 @@ int Hello::read(const fs::path& path,
                 uint64_t offset,
                 FileInfo& info)
 {
+    (void)info;
     int size = buffer.size();
     if (path != hello_path)
     {
@@ -81,6 +84,8 @@ int Hello::read(const fs::path& path,
 
 int main(int argc, char* argv[])
 {
+    (void)argc;
+    (void)argv;
     auto mountpoint = cppfuse::fs::path("/mnt/hello");
     auto file_system = cppfuse::Hello(mountpoint);
     file_system.mount();

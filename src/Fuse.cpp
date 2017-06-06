@@ -12,7 +12,7 @@ Fuse* get_fuse_from_context()
     return fuse;
 }
 
-static int fuse_getattr(const char* path, struct stat* stbuf)
+static int cppfuse_getattr(const char* path, struct stat* stbuf)
 {
     int result = 0;
     memset(stbuf, 0, sizeof(struct stat));
@@ -28,7 +28,7 @@ static int fuse_getattr(const char* path, struct stat* stbuf)
     return result;
 }
 
-static int fuse_readlink(const char* path, char* output, size_t output_size)
+static int cppfuse_readlink(const char* path, char* output, size_t output_size)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -44,7 +44,7 @@ static int fuse_readlink(const char* path, char* output, size_t output_size)
     return result;
 }
 
-static int fuse_mknod(const char* path, mode_t mode, dev_t device_id)
+static int cppfuse_mknod(const char* path, mode_t mode, dev_t device_id)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -59,7 +59,7 @@ static int fuse_mknod(const char* path, mode_t mode, dev_t device_id)
     return result;
 }
 
-static int fuse_mkdir(const char* path, mode_t mode)
+static int cppfuse_mkdir(const char* path, mode_t mode)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -74,7 +74,7 @@ static int fuse_mkdir(const char* path, mode_t mode)
     return result;
 }
 
-static int fuse_unlink(const char* path)
+static int cppfuse_unlink(const char* path)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -89,7 +89,7 @@ static int fuse_unlink(const char* path)
     return result;
 }
 
-static int fuse_rmdir(const char* path)
+static int cppfuse_rmdir(const char* path)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -104,7 +104,7 @@ static int fuse_rmdir(const char* path)
     return result;
 }
 
-static int fuse_symlink(const char* target, const char* link_path)
+static int cppfuse_symlink(const char* target, const char* link_path)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -119,7 +119,7 @@ static int fuse_symlink(const char* target, const char* link_path)
     return result;
 }
 
-static int fuse_rename(const char* oldpath, const char* newpath)
+static int cppfuse_rename(const char* oldpath, const char* newpath)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -134,7 +134,7 @@ static int fuse_rename(const char* oldpath, const char* newpath)
     return result;
 }
 
-static int fuse_link(const char* oldpath, const char* newpath)
+static int cppfuse_link(const char* oldpath, const char* newpath)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -149,7 +149,7 @@ static int fuse_link(const char* oldpath, const char* newpath)
     return result;
 }
 
-static int fuse_chmod(const char* path, mode_t mode)
+static int cppfuse_chmod(const char* path, mode_t mode)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -164,7 +164,7 @@ static int fuse_chmod(const char* path, mode_t mode)
     return result;
 }
 
-static int fuse_chown(const char* path, uid_t user_id, gid_t group_id)
+static int cppfuse_chown(const char* path, uid_t user_id, gid_t group_id)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -179,7 +179,7 @@ static int fuse_chown(const char* path, uid_t user_id, gid_t group_id)
     return result;
 }
 
-static int fuse_truncate(const char* path, off_t length)
+static int cppfuse_truncate(const char* path, off_t length)
 {
     int result = 0;
     auto fuse = get_fuse_from_context();
@@ -194,7 +194,7 @@ static int fuse_truncate(const char* path, off_t length)
     return result;
 }
 
-static int fuse_open(const char* path, struct fuse_file_info* fi)
+static int cppfuse_open(const char* path, struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -209,11 +209,11 @@ static int fuse_open(const char* path, struct fuse_file_info* fi)
     return result;
 }
 
-static int fuse_read(const char* path,
-                     char* buf,
-                     size_t size,
-                     off_t offset,
-                     struct fuse_file_info* fi)
+static int cppfuse_read(const char* path,
+                        char* buf,
+                        size_t size,
+                        off_t offset,
+                        struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto buffer = string_view(buf, size);
@@ -229,11 +229,11 @@ static int fuse_read(const char* path,
     return result;
 }
 
-static int fuse_write(const char* path,
-                      const char* buf,
-                      size_t size,
-                      off_t offset,
-                      struct fuse_file_info* fi)
+static int cppfuse_write(const char* path,
+                         const char* buf,
+                         size_t size,
+                         off_t offset,
+                         struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto buffer = string_view(buf, size);
@@ -249,7 +249,7 @@ static int fuse_write(const char* path,
     return result;
 }
 
-static int fuse_statfs(const char* path, struct statvfs* stats)
+static int cppfuse_statfs(const char* path, struct statvfs* stats)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -264,7 +264,7 @@ static int fuse_statfs(const char* path, struct statvfs* stats)
     return result;
 }
 
-static int fuse_flush(const char* path, struct fuse_file_info* info)
+static int cppfuse_flush(const char* path, struct fuse_file_info* info)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -279,7 +279,7 @@ static int fuse_flush(const char* path, struct fuse_file_info* info)
     return result;
 }
 
-static int fuse_release(const char* path, struct fuse_file_info* info)
+static int cppfuse_release(const char* path, struct fuse_file_info* info)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -294,7 +294,7 @@ static int fuse_release(const char* path, struct fuse_file_info* info)
     return result;
 }
 
-static int fuse_fsync(const char* path, int fd, struct fuse_file_info* info)
+static int cppfuse_fsync(const char* path, int fd, struct fuse_file_info* info)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -309,11 +309,11 @@ static int fuse_fsync(const char* path, int fd, struct fuse_file_info* info)
     return result;
 }
 
-static int fuse_setxattr(const char* path,
-                         const char* name,
-                         const char* value,
-                         size_t size,
-                         int flags)
+static int cppfuse_setxattr(const char* path,
+                            const char* name,
+                            const char* value,
+                            size_t size,
+                            int flags)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -330,7 +330,7 @@ static int fuse_setxattr(const char* path,
 }
 
 static int
-fuse_getxattr(const char* path, const char* name, char* value, size_t size)
+cppfuse_getxattr(const char* path, const char* name, char* value, size_t size)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -346,7 +346,7 @@ fuse_getxattr(const char* path, const char* name, char* value, size_t size)
     return result;
 }
 
-static int fuse_listxattr(const char* path, char* list, size_t size)
+static int cppfuse_listxattr(const char* path, char* list, size_t size)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -376,7 +376,7 @@ static int fuse_listxattr(const char* path, char* list, size_t size)
     return result;
 }
 
-static int fuse_removexattr(const char* path, const char* name)
+static int cppfuse_removexattr(const char* path, const char* name)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -391,7 +391,7 @@ static int fuse_removexattr(const char* path, const char* name)
     return result;
 }
 
-int fuse_opendir(const char* path, struct fuse_file_info* info)
+int cppfuse_opendir(const char* path, struct fuse_file_info* info)
 {
     auto fuse = get_fuse_from_context();
     int result = 0;
@@ -406,12 +406,13 @@ int fuse_opendir(const char* path, struct fuse_file_info* info)
     return result;
 }
 
-static int fuse_readdir(const char* path,
-                        void* buf,
-                        fuse_fill_dir_t filler,
-                        off_t offset,
-                        struct fuse_file_info* fi)
+static int cppfuse_readdir(const char* path,
+                           void* buf,
+                           fuse_fill_dir_t filler,
+                           off_t offset,
+                           struct fuse_file_info* fi)
 {
+    (void)offset;
     auto fuse = get_fuse_from_context();
     auto result = 0;
     try
@@ -429,7 +430,7 @@ static int fuse_readdir(const char* path,
     return result;
 }
 
-static int fuse_releasedir(const char* path, struct fuse_file_info* fi)
+static int cppfuse_releasedir(const char* path, struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -445,7 +446,7 @@ static int fuse_releasedir(const char* path, struct fuse_file_info* fi)
 }
 
 static int
-fuse_fsyncdir(const char* path, int datasync, struct fuse_file_info* fi)
+cppfuse_fsyncdir(const char* path, int datasync, struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -460,7 +461,7 @@ fuse_fsyncdir(const char* path, int datasync, struct fuse_file_info* fi)
     return result;
 }
 
-static int fuse_access(const char* path, int mode)
+static int cppfuse_access(const char* path, int mode)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -476,7 +477,7 @@ static int fuse_access(const char* path, int mode)
 }
 
 static int
-fuse_create(const char* path, mode_t mode, struct fuse_file_info* fi)
+cppfuse_create(const char* path, mode_t mode, struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -492,7 +493,7 @@ fuse_create(const char* path, mode_t mode, struct fuse_file_info* fi)
 }
 
 static int
-fuse_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
+cppfuse_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -507,8 +508,9 @@ fuse_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
     return result;
 }
 
-static int
-fuse_fgetattr(const char* path, struct stat* attr, struct fuse_file_info* fi)
+static int cppfuse_fgetattr(const char* path,
+                            struct stat* attr,
+                            struct fuse_file_info* fi)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -523,10 +525,10 @@ fuse_fgetattr(const char* path, struct stat* attr, struct fuse_file_info* fi)
     return result;
 }
 
-static int fuse_lock(const char* path,
-                     struct fuse_file_info* fi,
-                     int cmd,
-                     struct flock* file_lock)
+static int cppfuse_lock(const char* path,
+                        struct fuse_file_info* fi,
+                        int cmd,
+                        struct flock* file_lock)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -541,7 +543,7 @@ static int fuse_lock(const char* path,
     return result;
 }
 
-int fuse_utimens(const char* path, const struct timespec tv[2])
+int cppfuse_utimens(const char* path, const struct timespec tv[2])
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
@@ -556,13 +558,85 @@ int fuse_utimens(const char* path, const struct timespec tv[2])
     return result;
 }
 
-int fuse_bmap(const char* path, size_t blocksize, uint64_t* idx)
+int cppfuse_bmap(const char* path, size_t blocksize, uint64_t* idx)
 {
     auto fuse = get_fuse_from_context();
     auto result = 0;
     try
     {
         *idx = fuse->bmap(fs::path(path), blocksize);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
+}
+
+int cppfuse_ioctl(const char* path,
+                  int cmd,
+                  void* arg,
+                  struct fuse_file_info* fi,
+                  unsigned int flags,
+                  void* data)
+{
+    auto fuse = get_fuse_from_context();
+    auto result = 0;
+    try
+    {
+        fuse->ioctl(fs::path(path), cmd, arg, *fi, flags, data);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
+}
+
+int cppfuse_poll(const char* path,
+                 struct fuse_file_info* fi,
+                 struct fuse_pollhandle* ph,
+                 unsigned* reventsp)
+{
+    auto fuse = get_fuse_from_context();
+    auto result = 0;
+    try
+    {
+        fuse->poll(fs::path(path), *fi, ph, reventsp);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
+}
+
+int cppfuse_flock(const char* path, struct fuse_file_info* fi, int op)
+{
+    auto fuse = get_fuse_from_context();
+    auto result = 0;
+    try
+    {
+        fuse->flock(fs::path(path), *fi, op);
+    }
+    catch (const fs::filesystem_error& e)
+    {
+        result = e.code().value();
+    }
+    return result;
+}
+
+int cppfuse_fallocate(const char* path,
+                      int mode,
+                      off_t offset,
+                      off_t len,
+                      struct fuse_file_info* fi)
+{
+    auto fuse = get_fuse_from_context();
+    auto result = 0;
+    try
+    {
+        fuse->fallocate(fs::path(path), mode, offset, len, *fi);
     }
     catch (const fs::filesystem_error& e)
     {
@@ -586,39 +660,42 @@ void Fuse::mount()
     if (!is_mounted() && nullptr != channel_)
     {
         auto operations = fuse_operations{};
-        operations.getattr = fuse_getattr;
-        operations.readlink = fuse_readlink;
-        operations.mknod = fuse_mknod;
-        operations.mkdir = fuse_mkdir;
-        operations.unlink = fuse_unlink;
-        operations.rmdir = fuse_rmdir;
-        operations.symlink = fuse_symlink;
-        operations.rename = fuse_rename;
-        operations.link = fuse_link;
-        operations.chmod = fuse_chmod;
-        operations.chown = fuse_chown;
-        operations.truncate = fuse_truncate;
-        operations.open = fuse_open;
-        operations.read = fuse_read;
-        operations.write = fuse_write;
-        operations.statfs = fuse_statfs;
-        operations.flush = fuse_flush;
-        operations.release = fuse_release;
-        operations.fsync = fuse_fsync;
-        operations.setxattr = fuse_setxattr;
-        operations.getxattr = fuse_getxattr;
-        operations.listxattr = fuse_listxattr;
-        operations.removexattr = fuse_removexattr;
-        operations.readdir = fuse_readdir;
-        operations.releasedir = fuse_releasedir;
-        operations.fsyncdir = fuse_fsyncdir;
-        operations.access = fuse_access;
-        operations.create = fuse_create;
-        operations.ftruncate = fuse_ftruncate;
-        operations.lock = fuse_lock;
-        operations.fgetattr = fuse_fgetattr;
-        operations.utimens = fuse_utimens;
-        operations.bmap = fuse_bmap;
+        operations.getattr = cppfuse_getattr;
+        operations.readlink = cppfuse_readlink;
+        operations.mknod = cppfuse_mknod;
+        operations.mkdir = cppfuse_mkdir;
+        operations.unlink = cppfuse_unlink;
+        operations.rmdir = cppfuse_rmdir;
+        operations.symlink = cppfuse_symlink;
+        operations.rename = cppfuse_rename;
+        operations.link = cppfuse_link;
+        operations.chmod = cppfuse_chmod;
+        operations.chown = cppfuse_chown;
+        operations.truncate = cppfuse_truncate;
+        operations.open = cppfuse_open;
+        operations.read = cppfuse_read;
+        operations.write = cppfuse_write;
+        operations.statfs = cppfuse_statfs;
+        operations.flush = cppfuse_flush;
+        operations.release = cppfuse_release;
+        operations.fsync = cppfuse_fsync;
+        operations.setxattr = cppfuse_setxattr;
+        operations.getxattr = cppfuse_getxattr;
+        operations.listxattr = cppfuse_listxattr;
+        operations.removexattr = cppfuse_removexattr;
+        operations.readdir = cppfuse_readdir;
+        operations.releasedir = cppfuse_releasedir;
+        operations.fsyncdir = cppfuse_fsyncdir;
+        operations.access = cppfuse_access;
+        operations.create = cppfuse_create;
+        operations.ftruncate = cppfuse_ftruncate;
+        operations.lock = cppfuse_lock;
+        operations.fgetattr = cppfuse_fgetattr;
+        operations.utimens = cppfuse_utimens;
+        operations.bmap = cppfuse_bmap;
+        operations.ioctl = cppfuse_ioctl;
+        operations.flock = cppfuse_flock;
+        operations.fallocate = cppfuse_fallocate;
 
         auto ops_size = sizeof(operations);
         auto user_data = reinterpret_cast<void*>(this);
@@ -652,12 +729,14 @@ void Fuse::unsupported() const
 
 Stat Fuse::getattr(const fs::path& path)
 {
+    (void)path;
     unsupported();
     return Stat();
 }
 
 fs::path Fuse::readlink(const fs::path& path)
 {
+    (void)path;
     unsupported();
     return fs::path();
 }
@@ -666,46 +745,90 @@ void Fuse::mknod(const fs::path& path,
                  fs::perms permissions,
                  uint32_t device_id)
 {
+    (void)path;
+    (void)permissions;
+    (void)device_id;
     unsupported();
 }
 
 void Fuse::mkdir(const fs::path& path, fs::perms permissions)
 {
+    (void)path;
+    (void)permissions;
     unsupported();
 }
 
-void Fuse::unlink(const fs::path& path) { unsupported(); }
+void Fuse::unlink(const fs::path& path)
+{
+    (void)path;
+    unsupported();
+}
 
-void Fuse::rmdir(const fs::path& path) { unsupported(); }
+void Fuse::rmdir(const fs::path& path)
+{
+    (void)path;
+    unsupported();
+}
 
 void Fuse::symlink(const fs::path& target, const fs::path& link)
 {
+    (void)target;
+    (void)link;
     unsupported();
 }
 
-void Fuse::rename(const fs::path& from, const fs::path& to) { unsupported(); }
+void Fuse::rename(const fs::path& from, const fs::path& to)
+{
+    (void)from;
+    (void)to;
+    unsupported();
+}
 
-void Fuse::link(const fs::path& from, const fs::path& to) { unsupported(); }
+void Fuse::link(const fs::path& from, const fs::path& to)
+{
+    (void)from;
+    (void)to;
+    unsupported();
+}
 
 void Fuse::chmod(const fs::path& path, fs::perms permissions)
 {
+    (void)path;
+    (void)permissions;
     unsupported();
 }
 
 void Fuse::chown(const fs::path& path, uint32_t user_id, uint32_t group_id)
 {
+    (void)path;
+    (void)user_id;
+    (void)group_id;
     unsupported();
 }
 
-void Fuse::truncate(const fs::path& path, uint64_t offset) { unsupported(); }
+void Fuse::truncate(const fs::path& path, uint64_t offset)
+{
+    (void)path;
+    (void)offset;
+    unsupported();
+}
 
-void Fuse::open(const fs::path& path, FileInfo& info) { unsupported(); }
+void Fuse::open(const fs::path& path, FileInfo& info)
+{
+    (void)path;
+    (void)info;
+    unsupported();
+}
 
 int Fuse::read(const fs::path& path,
                string_view& buffer,
                uint64_t offset,
                FileInfo& info)
 {
+    (void)path;
+    (void)buffer;
+    (void)offset;
+    (void)info;
     unsupported();
     return 0;
 }
@@ -715,22 +838,40 @@ int Fuse::write(const fs::path& path,
                 uint64_t offset,
                 FileInfo& info)
 {
+    (void)path;
+    (void)buffer;
+    (void)offset;
+    (void)info;
     unsupported();
     return 0;
 }
 
 StatVfs Fuse::statfs(const fs::path& path)
 {
+    (void)path;
     unsupported();
     return StatVfs();
 }
 
-void Fuse::flush(const fs::path& path, FileInfo& info) { unsupported(); }
+void Fuse::flush(const fs::path& path, FileInfo& info)
+{
+    (void)path;
+    (void)info;
+    unsupported();
+}
 
-void Fuse::release(const fs::path& path, FileInfo& info) { unsupported(); }
+void Fuse::release(const fs::path& path, FileInfo& info)
+{
+    (void)path;
+    (void)info;
+    unsupported();
+}
 
 void Fuse::fsync(const fs::path& path, int fd, FileInfo& info)
 {
+    (void)path;
+    (void)fd;
+    (void)info;
     unsupported();
 }
 
@@ -738,59 +879,92 @@ void Fuse::setxattr(const fs::path& path,
                     std::pair<std::string, string_view> attribute,
                     int flags)
 {
+    (void)path;
+    (void)attribute;
+    (void)flags;
     unsupported();
 }
 
 std::pair<std::string, string_view>
 Fuse::getxattr(const fs::path& path, const std::string& name)
 {
+    (void)path;
+    (void)name;
     unsupported();
     return std::pair<std::string, string_view>{};
 }
 
 std::vector<std::string> Fuse::listxattr(const fs::path& path)
 {
+    (void)path;
     unsupported();
     return std::vector<std::string>{};
 }
 
 void Fuse::removexattr(const fs::path& path, const std::string& name)
 {
+    (void)path;
+    (void)name;
     unsupported();
 }
 
-void Fuse::opendir(const fs::path& path, FileInfo& info) { unsupported(); }
+void Fuse::opendir(const fs::path& path, FileInfo& info)
+{
+    (void)path;
+    (void)info;
+    unsupported();
+}
 
 std::vector<fs::path> Fuse::readdir(const fs::path& path, FileInfo& info)
 {
+    (void)path;
+    (void)info;
     unsupported();
     return std::vector<fs::path>{};
 }
 
-void Fuse::releasedir(const fs::path& path, FileInfo& info) { unsupported(); }
+void Fuse::releasedir(const fs::path& path, FileInfo& info)
+{
+    (void)path;
+    (void)info;
+    unsupported();
+}
 
 void Fuse::fsyncdir(const fs::path& path, int datasync, FileInfo& info)
 {
+    (void)path;
+    (void)datasync;
+    (void)info;
     unsupported();
 }
 
 void Fuse::access(const fs::path& path, const fs::perms& permissions)
 {
+    (void)path;
+    (void)permissions;
     unsupported();
 }
 
 void Fuse::create(const fs::path& path, fs::perms perms, FileInfo& info)
 {
+    (void)path;
+    (void)perms;
+    (void)info;
     unsupported();
 }
 
 void Fuse::ftruncate(const fs::path& path, uint64_t size, FileInfo& info)
 {
+    (void)path;
+    (void)size;
+    (void)info;
     unsupported();
 }
 
 Stat Fuse::fgetattr(const fs::path& path, FileInfo& info)
 {
+    (void)path;
+    (void)info;
     unsupported();
     return Stat();
 }
@@ -800,6 +974,10 @@ void Fuse::lock(const fs::path& path,
                 int command,
                 Flock& file_lock)
 {
+    (void)path;
+    (void)info;
+    (void)command;
+    (void)file_lock;
     unsupported();
 }
 
@@ -807,13 +985,68 @@ void Fuse::utimens(const fs::path& path,
                    Timespec access_time,
                    Timespec mod_time)
 {
+    (void)path;
+    (void)access_time;
+    (void)mod_time;
     unsupported();
 }
 
 uint64_t Fuse::bmap(const fs::path& path, size_t blocksize)
 {
+    (void)path;
+    (void)blocksize;
     unsupported();
     return 0;
+}
+
+void Fuse::ioctl(const fs::path& path,
+                 int cmd,
+                 void* arg,
+                 FileInfo& info,
+                 unsigned int flags,
+                 void* data)
+{
+    (void)path;
+    (void)cmd;
+    (void)arg;
+    (void)info;
+    (void)flags;
+    (void)data;
+    unsupported();
+}
+
+void Fuse::poll(const fs::path& path,
+                FileInfo& info,
+                PollHandle* ph,
+                unsigned* reventsp)
+{
+    (void)path;
+    (void)info;
+    (void)ph;
+    (void)reventsp;
+    unsupported();
+}
+
+void Fuse::flock(const fs::path& path, FileInfo& info, int op)
+{
+    (void)path;
+    (void)info;
+    (void)op;
+    unsupported();
+}
+
+void Fuse::fallocate(const fs::path& path,
+                     int mode,
+                     uint64_t offset,
+                     uint64_t length,
+                     FileInfo& info)
+{
+    (void)path;
+    (void)mode;
+    (void)offset;
+    (void)length;
+    (void)info;
+    unsupported();
 }
 
 } // namespace cppfuse

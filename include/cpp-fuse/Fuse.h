@@ -20,6 +20,7 @@ using StatVfs = struct statvfs;
 using FileInfo = struct fuse_file_info;
 using Flock = struct flock;
 using Timespec = struct timespec;
+using PollHandle = struct fuse_pollhandle;
 
 class Fuse
 {
@@ -282,6 +283,78 @@ public:
      * mounted with the 'blkdev' option
      */
     virtual uint64_t bmap(const fs::path& path, size_t blocksize);
+
+    /**
+     * Ioctl
+     *
+     * flags will have FUSE_IOCTL_COMPAT set for 32bit ioctls in
+     * 64bit environment.  The size and direction of data is
+     * determined by _IOC_*() decoding of cmd.  For _IOC_NONE,
+     * data will be NULL, for _IOC_WRITE data is out area, for
+     * _IOC_READ in area and if both are set in/out area.  In all
+     * non-NULL cases, the area is of _IOC_SIZE(cmd) bytes.
+     *
+     * If flags has FUSE_IOCTL_DIR then the fuse_file_info refers to a
+     * directory file handle. */
+    virtual void ioctl(const fs::path& path,
+                       int cmd,
+                       void* arg,
+                       FileInfo& info,
+                       unsigned int flags,
+                       void* data);
+
+    /**
+     * Poll for IO readiness events
+     *
+     * Note: If ph is non-NULL, the client should notify
+     * when IO readiness events occur by calling
+     * fuse_notify_poll() with the specified ph.
+     *
+     * Regardless of the number of times poll with a non-NULL ph
+     * is received, single notification is enough to clear all.
+     * Notifying more times incurs overhead but doesn't harm
+     * correctness.
+     *
+     * The callee is responsible for destroying ph with
+     * fuse_pollhandle_destroy() when no longer in use.
+     */
+    virtual void poll(const fs::path& path,
+                      FileInfo& info,
+                      PollHandle* ph,
+                      unsigned* reventsp);
+
+    /**
+     * Perform BSD file locking operation
+     *
+     * The op argument will be either LOCK_SH, LOCK_EX or LOCK_UN
+     *
+     * Nonblocking requests will be indicated by ORing LOCK_NB to
+     * the above operations
+     *
+     * For more information see the flock(2) manual page.
+     *
+     * Additionally fi->owner will be set to a value unique to
+     * this open file.  This same value will be supplied to
+     * ->release() when the file is released.
+     *
+     * Note: if this method is not implemented, the kernel will still
+     * allow file locking to work locally.  Hence it is only
+     * interesting for network filesystems and similar. */
+    virtual void flock(const fs::path& path, FileInfo& info, int op);
+
+    /**
+     * Allocates space for an open file
+     *
+     * This function ensures that required space is allocated for specified
+     * file.  If this function returns success then any subsequent write
+     * request to specified range is guaranteed not to fail because of lack
+     * of space on the file system media.
+     */
+    virtual void fallocate(const fs::path& path,
+                           int mode,
+                           uint64_t offset,
+                           uint64_t length,
+                           FileInfo& info);
 
 private:
     void unsupported() const;
