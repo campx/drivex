@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <fuse/Fuse.h>
+#include <cpp-fuse/Fuse.h>
 #include <iostream>
 
 namespace cppfuse
