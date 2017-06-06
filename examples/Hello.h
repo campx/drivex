@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cpp-fuse/Fuse.h>
+#include <fuse/Fuse.h>
 
 namespace cppfuse
 {
