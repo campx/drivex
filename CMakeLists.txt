@@ -25,5 +25,8 @@ target_link_libraries(libcpp-fuse pthread ${FUSE_LIBRARIES})
 add_executable(hello examples/Hello.cpp)
 target_link_libraries(hello libcpp-fuse ${FUSE_LIBRARIES} stdc++fs)
 
+target_include_directories(libcpp-fuse INTERFACE
+                           "${cpp-fuse_SOURCE_DIR}/include")
+
 enable_testing()
 add_executable(TestFuse test/TestFuse.cpp)
