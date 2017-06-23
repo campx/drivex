@@ -18,7 +18,7 @@ else()
 endif()
 
 include_directories(${cpp-fuse_SOURCE_DIR}/include)
-add_library(libcpp-fuse src/Fuse.cpp)
+add_library(libcpp-fuse src/FileSystem.cpp src/Fuse.cpp)
 set_target_properties(libcpp-fuse PROPERTIES OUTPUT_NAME cpp-fuse)
 target_link_libraries(libcpp-fuse pthread ${FUSE_LIBRARIES})
 
