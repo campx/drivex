@@ -3,20 +3,20 @@
 #include <experimental/filesystem>
 #include <experimental/string_view>
 #include <fuse.h>
-/*
-include <errno.h>
-include <fcntl.h>
-include <iterator>
-include <map>
-include <stdio.h>
-include <string.h>
-*/
 
-namespace cppfuse
+namespace x
 {
 
-namespace fs = std::experimental::filesystem;
+namespace filesystem
+{
+
 using string_view = std::experimental::string_view;
+using Path = std::experimental::filesystem::path;
+using FileStatus = std::experimental::filesystem::file_status;
+using Permissions = std::experimental::filesystem::perms;
+using Error = std::experimental::filesystem::filesystem_error;
+using FileType = std::experimental::filesystem::file_type;
+using std::experimental::filesystem::is_directory;
 
 class FileSystem
 {
@@ -24,72 +24,70 @@ public:
     virtual ~FileSystem() = default;
 
     /** Get absolute path */
-    fs::path absolute(const fs::path& path) const noexcept;
+    Path absolute(const Path& path) const noexcept;
 
-    static fs::path parent_path(const fs::path& path);
+    static Path parent_path(const Path& path);
 
     /** Get the current path, ala POSIX getcwd */
-    const fs::path& current_path() const noexcept;
+    const Path& current_path() const noexcept;
 
     /** Get the size of a file */
-    virtual std::uintmax_t file_size(const fs::path& path);
+    virtual std::uintmax_t file_size(const Path& path);
 
     /** Get file attributes, following symlinks */
-    virtual fs::file_status status(const fs::path& path);
+    virtual FileStatus status(const Path& path);
 
     /** Get file attributes without following symlinks */
-    virtual fs::file_status symlink_status(const fs::path& path);
+    virtual FileStatus symlink_status(const Path& path);
 
     /** Read the target of a symbolic link */
-    virtual fs::path read_symlink(const fs::path& path);
+    virtual Path read_symlink(const Path& path);
 
     /** Create a directory */
-    virtual void create_directory(const fs::path& path);
+    virtual void create_directory(const Path& path);
 
     /** Remove a file */
-    virtual void unlink(const fs::path& path);
+    virtual void unlink(const Path& path);
 
     /** Remove a directory */
-    virtual void rmdir(const fs::path& path);
+    virtual void rmdir(const Path& path);
 
     /** Create a symbolic link */
-    virtual void symlink(const fs::path& target, const fs::path& link);
+    virtual void symlink(const Path& target, const Path& link);
 
     /** Rename a file */
-    virtual void rename(const fs::path& from, const fs::path& to);
+    virtual void rename(const Path& from, const Path& to);
 
     /** Create a hard link to a file */
-    virtual void link(const fs::path& from, const fs::path& to);
+    virtual void link(const Path& from, const Path& to);
 
     /** Change the permission bits of a file */
-    virtual void permissions(const fs::path& path, fs::perms permissions);
+    virtual void permissions(const Path& path, Permissions permissions);
 
     /** Change the owner and group of a file */
-    virtual void
-    chown(const fs::path& path, uint32_t user_id, uint32_t group_id);
+    virtual void chown(const Path& path, uint32_t user_id, uint32_t group_id);
 
     /** Change the size of a file */
-    virtual void truncate(const fs::path& path, uint64_t offset);
+    virtual void truncate(const Path& path, uint64_t offset);
 
     /** Path open operation
      *
      * Implementation should check if open is permitted for the given flags */
-    virtual void open(const fs::path& path, int flags);
+    virtual void open(const Path& path, int flags);
 
     /** Read data from an open file
      *
      * Read should return exactly the number of bytes requested except
      * on EOF or error, otherwise the rest of the data will be
      * substituted with zeroes.	*/
-    virtual int
-    read(const fs::path& path, string_view& buffer, uint64_t offset);
+    virtual int read(const Path& path, string_view& buffer, uint64_t offset);
 
     /** Write data to an open file
      *
      * Write should return exactly the number of bytes requested
      * except on error. */
     virtual int
-    write(const fs::path& path, const string_view& buffer, uint64_t offset);
+    write(const Path& path, const string_view& buffer, uint64_t offset);
 
     /** Possibly flush cached data
      *
@@ -112,7 +110,7 @@ public:
      * Filesystems shouldn't assume that flush will always be called
      * after some writes, or that if will be called at all.
      */
-    virtual void flush(const fs::path& path);
+    virtual void flush(const Path& path);
 
     /** Release an open file
      *
@@ -126,7 +124,7 @@ public:
      * release will mean, that no more reads/writes will happen on the
      * file.  The return value of release is ignored.
      */
-    virtual void release(const fs::path& path, int flags);
+    virtual void release(const Path& path, int flags);
 
     /** Synchronize file contents
      *
@@ -135,13 +133,13 @@ public:
      *
      * @param fd File descriptor
      */
-    virtual void fsync(const fs::path& path, int fd);
+    virtual void fsync(const Path& path, int fd);
 
     /** Set extended attributes
      *
      * An attribute is a key-value pair where the key is a string and the value
      * is a binary blob */
-    virtual void setxattr(const fs::path& path,
+    virtual void setxattr(const Path& path,
                           std::pair<std::string, string_view> attribute,
                           int flags);
 
@@ -150,22 +148,22 @@ public:
      * An attribute is a key-value pair where the key is a string and the value
      * is a binary blob */
     virtual std::pair<std::string, string_view>
-    getxattr(const fs::path& path, const std::string& name);
+    getxattr(const Path& path, const std::string& name);
 
     /** List extended attributes */
-    virtual std::vector<std::string> listxattr(const fs::path& path);
+    virtual std::vector<std::string> listxattr(const Path& path);
 
     /** Remove extended attributes */
-    virtual void removexattr(const fs::path& path, const std::string& name);
+    virtual void removexattr(const Path& path, const std::string& name);
 
     /** Read directory */
-    virtual std::vector<fs::path> read_directory(const fs::path& path);
+    virtual std::vector<Path> read_directory(const Path& path);
 
     /** Synchronize directory contents
      *
      * If the datasync parameter is non-zero, then only the user data
      * should be flushed, not the meta data */
-    virtual void fsyncdir(const fs::path& path, int datasync);
+    virtual void fsyncdir(const Path& path, int datasync);
 
     /**
      * Check file access permissions
@@ -174,7 +172,7 @@ public:
      * 'default_permissions' mount option is given, this method is not
      * called.
      */
-    virtual void access(const fs::path& path, const fs::perms& permissions);
+    virtual void access(const Path& path, const Permissions& permissions);
 
     /**
      * Create and open a file
@@ -182,7 +180,7 @@ public:
      * If the file does not exist, first create it with the specified
      * mode, and then open it.
      */
-    virtual void create_file(const fs::path& path);
+    virtual void create_file(const Path& path);
 
     /**
      * Perform POSIX file locking operation
@@ -214,19 +212,19 @@ public:
      * allow file locking to work locally.  Hence it is only
      * interesting for network filesystems and similar.
      */
-    virtual void lock(const fs::path& path, int command);
+    virtual void lock(const Path& path, int command);
 
     /** Get the last read time for a given path */
-    virtual std::time_t last_read_time(const fs::path& path);
+    virtual std::time_t last_read_time(const Path& path);
 
     /** Set the last read time for a given path */
-    virtual void last_read_time(const fs::path& path, std::time_t new_time);
+    virtual void last_read_time(const Path& path, std::time_t new_time);
 
     /** Get the write time for a given path */
-    virtual std::time_t last_write_time(const fs::path& path);
+    virtual std::time_t last_write_time(const Path& path);
 
     /** Set the write time for a given path */
-    virtual void last_write_time(const fs::path& path, std::time_t new_time);
+    virtual void last_write_time(const Path& path, std::time_t new_time);
 
     /**
      * Map block index within file to block index within device
@@ -234,7 +232,7 @@ public:
      * Note: This makes sense only for block device backed filesystems
      * mounted with the 'blkdev' option
      */
-    virtual uint64_t bmap(const fs::path& path, size_t blocksize);
+    virtual uint64_t bmap(const Path& path, size_t blocksize);
 
     /**
      * Ioctl
@@ -248,11 +246,8 @@ public:
      *
      * If flags has FUSE_IOCTL_DIR then the fuse_file_info refers to a
      * directory file handle. */
-    virtual void ioctl(const fs::path& path,
-                       int cmd,
-                       void* arg,
-                       unsigned int flags,
-                       void* data);
+    virtual void
+    ioctl(const Path& path, int cmd, void* arg, unsigned int flags, void* data);
 
     /**
      * Allocates space for an open file
@@ -262,14 +257,14 @@ public:
      * request to specified range is guaranteed not to fail because of lack
      * of space on the file system media.
      */
-    virtual void fallocate(const fs::path& path,
-                           int mode,
-                           uint64_t offset,
-                           uint64_t length);
+    virtual void
+    fallocate(const Path& path, int mode, uint64_t offset, uint64_t length);
 
 private:
     void unsupported() const;
-    fs::path current_path_;
+    Path current_path_;
 };
 
-} // namespace cppfuse
+} // namespace filesystem
+
+} // namespace x

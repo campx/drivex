@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(cpp-fuse LANGUAGES CXX)
+project(fusex LANGUAGES CXX)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FILE_OFFSET_BITS=64")
@@ -17,16 +17,16 @@ else()
 	endif()
 endif()
 
-include_directories(${cpp-fuse_SOURCE_DIR}/include)
-add_library(libcpp-fuse src/FileSystem.cpp src/Fuse.cpp)
-set_target_properties(libcpp-fuse PROPERTIES OUTPUT_NAME cpp-fuse)
-target_link_libraries(libcpp-fuse pthread ${FUSE_LIBRARIES})
+include_directories(${fusex_SOURCE_DIR}/include)
+add_library(libfusex src/FileSystem.cpp src/Fuse.cpp)
+set_target_properties(libfusex PROPERTIES OUTPUT_NAME fusex)
+target_link_libraries(libfusex pthread ${FUSE_LIBRARIES})
 
 add_executable(hello examples/Hello.cpp)
-target_link_libraries(hello libcpp-fuse ${FUSE_LIBRARIES} stdc++fs)
+target_link_libraries(hello libfusex ${FUSE_LIBRARIES} stdc++fs)
 
-target_include_directories(libcpp-fuse INTERFACE
-                           "${cpp-fuse_SOURCE_DIR}/include")
+target_include_directories(libfusex INTERFACE
+                           "${fusex_SOURCE_DIR}/include")
 
 enable_testing()
 add_executable(TestFuse test/TestFuse.cpp)

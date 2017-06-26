@@ -21,8 +21,8 @@ script:
           && make test;
       fi
     - if [ $TRAVIS_OS_NAME == linux ]; then 
-          docker build -t jbrooker/cpp-fuse . 
-          && docker run -v $PWD:/work/source/ --privileged -it jbrooker/cpp-fuse;
+          docker build -t jbrooker/fusex . 
+          && docker run -v $PWD:/work/source/ --privileged -it jbrooker/fusex;
       fi
 branches:
     only:

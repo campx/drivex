@@ -1,16 +1,19 @@
-#include <cpp-fuse/FileSystem.h>
+#include <fusex/FileSystem.h>
 #include <iostream>
 #include <system_error>
 
 using errc = std::errc;
 using std::make_error_code;
 
-namespace cppfuse
+namespace x
 {
 
-fs::path FileSystem::absolute(const fs::path& path) const noexcept
+namespace filesystem
 {
-    auto output = fs::path();
+
+Path FileSystem::absolute(const Path& path) const noexcept
+{
+    auto output = Path();
     if (path.is_relative())
     {
         output /= current_path();
@@ -29,97 +32,92 @@ fs::path FileSystem::absolute(const fs::path& path) const noexcept
     return output;
 }
 
-fs::path FileSystem::parent_path(const fs::path& path)
+Path FileSystem::parent_path(const Path& path)
 {
     return path == "/" ? path : path.parent_path();
 }
 
-const fs::path& FileSystem::current_path() const noexcept
-{
-    return current_path_;
-}
+const Path& FileSystem::current_path() const noexcept { return current_path_; }
 
 void FileSystem::unsupported() const
 {
     auto ec = make_error_code(errc::function_not_supported);
-    throw fs::filesystem_error("operation not supported by filesystem", ec);
+    throw Error("operation not supported by filesystem", ec);
 }
 
-std::uintmax_t FileSystem::file_size(const fs::path& path)
+std::uintmax_t FileSystem::file_size(const Path& path)
 {
     (void)path;
     unsupported();
     return 0;
 }
 
-fs::file_status FileSystem::status(const fs::path& path)
+FileStatus FileSystem::status(const Path& path)
 {
     (void)path;
     unsupported();
-    return fs::file_status{};
+    return FileStatus{};
 }
 
-fs::file_status FileSystem::symlink_status(const fs::path& path)
+FileStatus FileSystem::symlink_status(const Path& path)
 {
     return status(path);
 }
 
-fs::path FileSystem::read_symlink(const fs::path& path)
+Path FileSystem::read_symlink(const Path& path)
 {
     (void)path;
     unsupported();
-    return fs::path();
+    return Path();
 }
 
-void FileSystem::create_directory(const fs::path& path)
-{
-    (void)path;
-    unsupported();
-}
-
-void FileSystem::unlink(const fs::path& path)
+void FileSystem::create_directory(const Path& path)
 {
     (void)path;
     unsupported();
 }
 
-void FileSystem::rmdir(const fs::path& path)
+void FileSystem::unlink(const Path& path)
 {
     (void)path;
     unsupported();
 }
 
-void FileSystem::symlink(const fs::path& target, const fs::path& link)
+void FileSystem::rmdir(const Path& path)
+{
+    (void)path;
+    unsupported();
+}
+
+void FileSystem::symlink(const Path& target, const Path& link)
 {
     (void)target;
     (void)link;
     unsupported();
 }
 
-void FileSystem::rename(const fs::path& from, const fs::path& to)
+void FileSystem::rename(const Path& from, const Path& to)
 {
     (void)from;
     (void)to;
     unsupported();
 }
 
-void FileSystem::link(const fs::path& from, const fs::path& to)
+void FileSystem::link(const Path& from, const Path& to)
 {
     (void)from;
     (void)to;
     unsupported();
 }
 
-void FileSystem::permissions(const fs::path& path, fs::perms permissions)
+void FileSystem::permissions(const Path& path, Permissions permissions)
 {
     (void)path;
     (void)permissions;
     unsupported();
 }
 
-void FileSystem::chown(const fs::path& path,
-                       uint32_t user_id,
-                       uint32_t group_id)
+void FileSystem::chown(const Path& path, uint32_t user_id, uint32_t group_id)
 {
     (void)path;
     (void)user_id;
@@ -127,23 +125,21 @@ void FileSystem::chown(const fs::path& path,
     unsupported();
 }
 
-void FileSystem::truncate(const fs::path& path, uint64_t offset)
+void FileSystem::truncate(const Path& path, uint64_t offset)
 {
     (void)path;
     (void)offset;
     unsupported();
 }
 
-void FileSystem::open(const fs::path& path, int flags)
+void FileSystem::open(const Path& path, int flags)
 {
     (void)path;
     (void)flags;
     unsupported();
 }
 
-int FileSystem::read(const fs::path& path,
-                     string_view& buffer,
-                     uint64_t offset)
+int FileSystem::read(const Path& path, string_view& buffer, uint64_t offset)
 {
     (void)path;
     (void)buffer;
@@ -152,7 +148,7 @@ int FileSystem::read(const fs::path& path,
     return 0;
 }
 
-int FileSystem::write(const fs::path& path,
+int FileSystem::write(const Path& path,
                       const string_view& buffer,
                       uint64_t offset)
 {
@@ -163,27 +159,27 @@ int FileSystem::write(const fs::path& path,
     return 0;
 }
 
-void FileSystem::flush(const fs::path& path)
+void FileSystem::flush(const Path& path)
 {
     (void)path;
     unsupported();
 }
 
-void FileSystem::release(const fs::path& path, int flags)
+void FileSystem::release(const Path& path, int flags)
 {
     (void)path;
     (void)flags;
     unsupported();
 }
 
-void FileSystem::fsync(const fs::path& path, int fd)
+void FileSystem::fsync(const Path& path, int fd)
 {
     (void)path;
     (void)fd;
     unsupported();
 }
 
-void FileSystem::setxattr(const fs::path& path,
+void FileSystem::setxattr(const Path& path,
                           std::pair<std::string, string_view> attribute,
                           int flags)
 {
@@ -194,7 +190,7 @@ void FileSystem::setxattr(const fs::path& path,
 }
 
 std::pair<std::string, string_view>
-FileSystem::getxattr(const fs::path& path, const std::string& name)
+FileSystem::getxattr(const Path& path, const std::string& name)
 {
     (void)path;
     (void)name;
@@ -202,83 +198,83 @@ FileSystem::getxattr(const fs::path& path, const std::string& name)
     return std::pair<std::string, string_view>{};
 }
 
-std::vector<std::string> FileSystem::listxattr(const fs::path& path)
+std::vector<std::string> FileSystem::listxattr(const Path& path)
 {
     (void)path;
     unsupported();
     return std::vector<std::string>{};
 }
 
-void FileSystem::removexattr(const fs::path& path, const std::string& name)
+void FileSystem::removexattr(const Path& path, const std::string& name)
 {
     (void)path;
     (void)name;
     unsupported();
 }
 
-std::vector<fs::path> FileSystem::read_directory(const fs::path& path)
+std::vector<Path> FileSystem::read_directory(const Path& path)
 {
     (void)path;
     unsupported();
-    return std::vector<fs::path>{};
+    return std::vector<Path>{};
 }
 
-void FileSystem::fsyncdir(const fs::path& path, int datasync)
+void FileSystem::fsyncdir(const Path& path, int datasync)
 {
     (void)path;
     (void)datasync;
     unsupported();
 }
 
-void FileSystem::access(const fs::path& path, const fs::perms& permissions)
+void FileSystem::access(const Path& path, const Permissions& permissions)
 {
     (void)path;
     (void)permissions;
     unsupported();
 }
 
-void FileSystem::create_file(const fs::path& path)
+void FileSystem::create_file(const Path& path)
 {
     (void)path;
     unsupported();
 }
 
-void FileSystem::lock(const fs::path& path, int command)
+void FileSystem::lock(const Path& path, int command)
 {
     (void)path;
     (void)command;
     unsupported();
 }
 
-std::time_t FileSystem::last_read_time(const fs::path& path)
+std::time_t FileSystem::last_read_time(const Path& path)
 {
     (void)path;
     unsupported();
     return std::time_t{};
 }
 
-void FileSystem::last_read_time(const fs::path& path, std::time_t new_time)
+void FileSystem::last_read_time(const Path& path, std::time_t new_time)
 {
     (void)path;
     (void)new_time;
     unsupported();
 }
 
-std::time_t FileSystem::last_write_time(const fs::path& path)
+std::time_t FileSystem::last_write_time(const Path& path)
 {
     (void)path;
     unsupported();
     return std::time_t{};
 }
 
-void FileSystem::last_write_time(const fs::path& path, std::time_t new_time)
+void FileSystem::last_write_time(const Path& path, std::time_t new_time)
 {
     (void)path;
     (void)new_time;
     unsupported();
 }
 
-uint64_t FileSystem::bmap(const fs::path& path, size_t blocksize)
+uint64_t FileSystem::bmap(const Path& path, size_t blocksize)
 {
     (void)path;
     (void)blocksize;
@@ -287,7 +283,7 @@ uint64_t FileSystem::bmap(const fs::path& path, size_t blocksize)
 }
 
 void FileSystem::ioctl(
-    const fs::path& path, int cmd, void* arg, unsigned int flags, void* data)
+    const Path& path, int cmd, void* arg, unsigned int flags, void* data)
 {
     (void)path;
     (void)cmd;
@@ -297,7 +293,7 @@ void FileSystem::ioctl(
     unsupported();
 }
 
-void FileSystem::fallocate(const fs::path& path,
+void FileSystem::fallocate(const Path& path,
                            int mode,
                            uint64_t offset,
                            uint64_t length)
@@ -309,4 +305,6 @@ void FileSystem::fallocate(const fs::path& path,
     unsupported();
 }
 
-} // namespace cppfuse
+} // namespace filesystem
+
+} // namespace x
