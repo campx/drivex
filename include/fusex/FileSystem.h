@@ -11,12 +11,13 @@ namespace filesystem
 {
 
 using string_view = std::experimental::string_view;
-using Path = std::experimental::filesystem::path;
-using FileStatus = std::experimental::filesystem::file_status;
-using Permissions = std::experimental::filesystem::perms;
-using Error = std::experimental::filesystem::filesystem_error;
-using FileType = std::experimental::filesystem::file_type;
 using std::experimental::filesystem::is_directory;
+using DirectoryEntry = std::experimental::directory_entry;
+using Error = std::experimental::filesystem::filesystem_error;
+using FileStatus = std::experimental::filesystem::file_status;
+using FileType = std::experimental::filesystem::file_type;
+using Path = std::experimental::filesystem::path;
+using Permissions = std::experimental::filesystem::perms;
 
 class FileSystem
 {
