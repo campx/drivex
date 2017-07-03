@@ -22,7 +22,7 @@ std::string error_description(std::errc ec);
 
 struct Error : public std::experimental::filesystem::filesystem_error
 {
-    Error(std::errc ec);
+    explicit Error(std::errc ec);
 };
 
 class FileSystem
