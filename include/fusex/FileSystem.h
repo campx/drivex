@@ -6,55 +6,85 @@
 
 namespace x
 {
-
 namespace filesystem
 {
 
 using string_view = std::experimental::string_view;
 using std::experimental::filesystem::is_directory;
-using DirectoryEntry = std::experimental::directory_entry;
-using Error = std::experimental::filesystem::filesystem_error;
+using DirectoryEntry = std::experimental::filesystem::directory_entry;
 using FileStatus = std::experimental::filesystem::file_status;
 using FileType = std::experimental::filesystem::file_type;
 using Path = std::experimental::filesystem::path;
 using Permissions = std::experimental::filesystem::perms;
+using CopyOptions = std::experimental::filesystem::copy_options;
+
+std::string error_description(std::errc ec);
+
+struct Error : public std::experimental::filesystem::filesystem_error
+{
+    Error(std::errc ec);
+};
 
 class FileSystem
 {
 public:
+    FileSystem();
     virtual ~FileSystem() = default;
 
     /** Get absolute path */
     Path absolute(const Path& path) const noexcept;
+
+    Path canonical(const Path& p) const;
 
     static Path parent_path(const Path& path);
 
     /** Get the current path, ala POSIX getcwd */
     const Path& current_path() const noexcept;
 
+    /** Set the current path ala POSIX chdir */
+    void current_path(const Path& p);
+
+    /** Determine whether a path exists */
+    bool exists(const filesystem::FileStatus s) const;
+    bool exists(const filesystem::Path& p) const;
+
     /** Get the size of a file */
-    virtual std::uintmax_t file_size(const Path& path);
+    virtual std::uintmax_t file_size(const Path& path) const;
 
     /** Get file attributes, following symlinks */
-    virtual FileStatus status(const Path& path);
+    virtual FileStatus status(const Path& path) const;
+
+    /** Copy a file or directory */
+    virtual void copy(const Path& from,
+                      const Path& to,
+                      CopyOptions options = CopyOptions::none);
+
+    /** Copy a symbolic link */
+    virtual void copy_symlink(const Path& from,
+                              const Path& to,
+                              CopyOptions options = CopyOptions::none);
+
+    bool status_known(filesystem::FileStatus s) const noexcept;
 
     /** Get file attributes without following symlinks */
-    virtual FileStatus symlink_status(const Path& path);
+    virtual FileStatus symlink_status(const Path& path) const;
 
     /** Read the target of a symbolic link */
-    virtual Path read_symlink(const Path& path);
+    virtual Path read_symlink(const Path& path) const;
 
     /** Create a directory */
-    virtual void create_directory(const Path& path);
+    virtual bool create_directory(const Path& path);
 
-    /** Remove a file */
-    virtual void unlink(const Path& path);
+    /** Create all directories in the given path */
+    virtual bool create_directories(const Path& p);
 
-    /** Remove a directory */
-    virtual void rmdir(const Path& path);
+    virtual bool equivalent(const Path& p1, const Path& p2) const;
+
+    /** Remove a file or directory */
+    virtual bool remove(const Path& path);
 
     /** Create a symbolic link */
-    virtual void symlink(const Path& target, const Path& link);
+    virtual void create_symlink(const Path& target, const Path& link);
 
     /** Rename a file */
     virtual void rename(const Path& from, const Path& to);
@@ -64,6 +94,26 @@ public:
 
     /** Change the permission bits of a file */
     virtual void permissions(const Path& path, Permissions permissions);
+
+    virtual bool is_empty(const filesystem::Path& p) const;
+
+    // File types
+    bool is_block_file(filesystem::FileStatus s) const noexcept;
+    bool is_block_file(const filesystem::Path& p) const;
+    bool is_character_file(filesystem::FileStatus s) const noexcept;
+    bool is_character_file(const filesystem::Path& p) const;
+    bool is_directory(filesystem::FileStatus s) const noexcept;
+    bool is_directory(const filesystem::Path& p) const;
+    bool is_fifo(filesystem::FileStatus s) const noexcept;
+    bool is_fifo(const filesystem::Path& p) const;
+    bool is_other(filesystem::FileStatus s) const noexcept;
+    bool is_other(const filesystem::Path& p) const;
+    bool is_regular_file(filesystem::FileStatus s) const noexcept;
+    bool is_regular_file(const filesystem::Path& p) const;
+    bool is_socket(filesystem::FileStatus s) const noexcept;
+    bool is_socket(const filesystem::Path& p) const;
+    bool is_symlink(filesystem::FileStatus s) const noexcept;
+    bool is_symlink(const filesystem::Path& p) const;
 
     /** Change the owner and group of a file */
     virtual void chown(const Path& path, uint32_t user_id, uint32_t group_id);
@@ -81,7 +131,8 @@ public:
      * Read should return exactly the number of bytes requested except
      * on EOF or error, otherwise the rest of the data will be
      * substituted with zeroes.	*/
-    virtual int read(const Path& path, string_view& buffer, uint64_t offset);
+    virtual int
+    read(const Path& path, string_view& buffer, uint64_t offset) const;
 
     /** Write data to an open file
      *
@@ -158,7 +209,7 @@ public:
     virtual void removexattr(const Path& path, const std::string& name);
 
     /** Read directory */
-    virtual std::vector<Path> read_directory(const Path& path);
+    virtual std::vector<Path> read_directory(const Path& path) const;
 
     /** Synchronize directory contents
      *
@@ -267,5 +318,4 @@ private:
 };
 
 } // namespace filesystem
-
 } // namespace x
