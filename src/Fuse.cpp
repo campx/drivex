@@ -54,9 +54,7 @@ static int fusex_getattr(const char* path, struct stat* stbuf)
                 break;
             default:
             {
-                auto ec =
-                    std::make_error_code(std::errc::no_such_file_or_directory);
-                throw filesystem::Error("No such file or directory", ec);
+                throw filesystem::Error(std::errc::no_such_file_or_directory);
                 break;
             }
         }
@@ -109,7 +107,7 @@ static int fusex_unlink(const char* path)
     auto impl = get_impl_from_context();
     try
     {
-        impl->unlink(filesystem::Path(path));
+        impl->remove(filesystem::Path(path));
     }
     catch (const filesystem::Error& e)
     {
@@ -124,7 +122,7 @@ static int fusex_rmdir(const char* path)
     auto impl = get_impl_from_context();
     try
     {
-        impl->rmdir(filesystem::Path(path));
+        impl->remove(filesystem::Path(path));
     }
     catch (const filesystem::Error& e)
     {
@@ -139,7 +137,8 @@ static int fusex_symlink(const char* target, const char* link_path)
     auto impl = get_impl_from_context();
     try
     {
-        impl->symlink(filesystem::Path(target), filesystem::Path(link_path));
+        impl->create_symlink(filesystem::Path(target),
+                             filesystem::Path(link_path));
     }
     catch (const filesystem::Error& e)
     {
@@ -423,8 +422,7 @@ int fusex_opendir(const char* path, struct fuse_file_info* fi)
         auto status = symlink_status(filesystem::Path(path));
         if (!filesystem::is_directory(status))
         {
-            auto ec = std::make_error_code(std::errc::not_a_directory);
-            throw filesystem::Error("Not a directory", ec);
+            throw filesystem::Error(std::errc::not_a_directory);
         }
         impl->open(filesystem::Path(path), fi->flags);
     }
@@ -470,8 +468,7 @@ static int fusex_releasedir(const char* path, struct fuse_file_info* fi)
         auto status = symlink_status(filesystem::Path(path));
         if (!filesystem::is_directory(status))
         {
-            auto ec = std::make_error_code(std::errc::not_a_directory);
-            throw filesystem::Error("Not a directory", ec);
+            throw filesystem::Error(std::errc::not_a_directory);
         }
         impl->release(filesystem::Path(path), fi->flags);
     }
