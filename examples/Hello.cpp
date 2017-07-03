@@ -9,7 +9,7 @@ using std::make_error_code;
 namespace x
 {
 
-std::uintmax_t Hello::file_size(const filesystem::Path& p)
+std::uintmax_t Hello::file_size(const filesystem::Path& p) const
 {
     std::uintmax_t size = 0;
     if (p == hello_path)
@@ -19,7 +19,8 @@ std::uintmax_t Hello::file_size(const filesystem::Path& p)
     return size;
 }
 
-filesystem::FileStatus Hello::symlink_status(const filesystem::Path& path)
+filesystem::FileStatus
+Hello::symlink_status(const filesystem::Path& path) const
 {
 
     auto result = filesystem::FileStatus{};
@@ -44,14 +45,13 @@ filesystem::FileStatus Hello::symlink_status(const filesystem::Path& path)
     }
     else
     {
-        auto ec = make_error_code(errc::no_such_file_or_directory);
-        throw filesystem::Error("No such file or directory", ec);
+        throw filesystem::Error(errc::no_such_file_or_directory);
     }
     return result;
 }
 
 std::vector<filesystem::Path>
-Hello::read_directory(const filesystem::Path& path)
+Hello::read_directory(const filesystem::Path& path) const
 {
     (void)path;
     std::vector<filesystem::Path> result;
@@ -65,25 +65,22 @@ void Hello::open(const filesystem::Path& path, int flags)
 {
     if (path != hello_path)
     {
-        auto ec = make_error_code(errc::no_such_file_or_directory);
-        throw filesystem::Error("No such file or directory", ec);
+        throw filesystem::Error(errc::no_such_file_or_directory);
     }
     else if ((flags & 3) != O_RDONLY)
     {
-        auto ec = make_error_code(errc::permission_denied);
-        throw filesystem::Error("Permission denied", ec);
+        throw filesystem::Error(errc::permission_denied);
     }
 }
 
 int Hello::read(const filesystem::Path& path,
                 string_view& buffer,
-                uint64_t offset)
+                uint64_t offset) const
 {
     int size = buffer.size();
     if (path != hello_path)
     {
-        auto ec = make_error_code(errc::no_such_file_or_directory);
-        throw filesystem::Error("No such file or directory", ec);
+        throw filesystem::Error(errc::no_such_file_or_directory);
     }
     auto len = hello_str.size();
     if (offset < len)

@@ -11,19 +11,19 @@ namespace x
 class Hello : public filesystem::FileSystem
 {
 public:
-    std::uintmax_t file_size(const filesystem::Path& p) override;
+    std::uintmax_t file_size(const filesystem::Path& p) const override;
 
     filesystem::FileStatus
-    symlink_status(const filesystem::Path& path) override;
+    symlink_status(const filesystem::Path& path) const override;
 
     std::vector<filesystem::Path>
-    read_directory(const filesystem::Path& path) override;
+    read_directory(const filesystem::Path& path) const override;
 
     void open(const filesystem::Path& path, int flags) override;
 
     int read(const filesystem::Path& path,
              string_view& buffer,
-             uint64_t offset) override;
+             uint64_t offset) const override;
 
 private:
     std::string hello_str = "Hello, world!\n"; /** file contents */
