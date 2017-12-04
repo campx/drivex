@@ -4,9 +4,7 @@
 #include <experimental/string_view>
 #include <fuse.h>
 
-namespace x
-{
-namespace filesystem
+namespace filex
 {
 
 using string_view = std::experimental::string_view;
@@ -18,11 +16,9 @@ using Path = std::experimental::filesystem::path;
 using Permissions = std::experimental::filesystem::perms;
 using CopyOptions = std::experimental::filesystem::copy_options;
 
-std::string error_description(std::errc ec);
-
 struct Error : public std::experimental::filesystem::filesystem_error
 {
-    explicit Error(std::errc ec);
+    explicit Error(std::errc ec, std::string description = "");
 };
 
 class FileSystem
@@ -45,8 +41,8 @@ public:
     void current_path(const Path& p);
 
     /** Determine whether a path exists */
-    bool exists(const filesystem::FileStatus s) const;
-    bool exists(const filesystem::Path& p) const;
+    bool exists(const FileStatus s) const;
+    bool exists(const Path& p) const;
 
     /** Get the size of a file */
     virtual std::uintmax_t file_size(const Path& path) const;
@@ -64,7 +60,7 @@ public:
                               const Path& to,
                               CopyOptions options = CopyOptions::none);
 
-    bool status_known(filesystem::FileStatus s) const noexcept;
+    bool status_known(FileStatus s) const noexcept;
 
     /** Get file attributes without following symlinks */
     virtual FileStatus symlink_status(const Path& path) const;
@@ -73,10 +69,10 @@ public:
     virtual Path read_symlink(const Path& path) const;
 
     /** Create a directory */
-    virtual bool create_directory(const Path& path);
+    virtual void create_directory(const Path& path);
 
     /** Create all directories in the given path */
-    virtual bool create_directories(const Path& p);
+    virtual void create_directories(const Path& p);
 
     virtual bool equivalent(const Path& p1, const Path& p2) const;
 
@@ -95,25 +91,25 @@ public:
     /** Change the permission bits of a file */
     virtual void permissions(const Path& path, Permissions permissions);
 
-    virtual bool is_empty(const filesystem::Path& p) const;
+    virtual bool is_empty(const Path& p) const;
 
     // File types
-    bool is_block_file(filesystem::FileStatus s) const noexcept;
-    bool is_block_file(const filesystem::Path& p) const;
-    bool is_character_file(filesystem::FileStatus s) const noexcept;
-    bool is_character_file(const filesystem::Path& p) const;
-    bool is_directory(filesystem::FileStatus s) const noexcept;
-    bool is_directory(const filesystem::Path& p) const;
-    bool is_fifo(filesystem::FileStatus s) const noexcept;
-    bool is_fifo(const filesystem::Path& p) const;
-    bool is_other(filesystem::FileStatus s) const noexcept;
-    bool is_other(const filesystem::Path& p) const;
-    bool is_regular_file(filesystem::FileStatus s) const noexcept;
-    bool is_regular_file(const filesystem::Path& p) const;
-    bool is_socket(filesystem::FileStatus s) const noexcept;
-    bool is_socket(const filesystem::Path& p) const;
-    bool is_symlink(filesystem::FileStatus s) const noexcept;
-    bool is_symlink(const filesystem::Path& p) const;
+    bool is_block_file(FileStatus s) const noexcept;
+    bool is_block_file(const Path& p) const;
+    bool is_character_file(FileStatus s) const noexcept;
+    bool is_character_file(const Path& p) const;
+    bool is_directory(FileStatus s) const noexcept;
+    bool is_directory(const Path& p) const;
+    bool is_fifo(FileStatus s) const noexcept;
+    bool is_fifo(const Path& p) const;
+    bool is_other(FileStatus s) const noexcept;
+    bool is_other(const Path& p) const;
+    bool is_regular_file(FileStatus s) const noexcept;
+    bool is_regular_file(const Path& p) const;
+    bool is_socket(FileStatus s) const noexcept;
+    bool is_socket(const Path& p) const;
+    bool is_symlink(FileStatus s) const noexcept;
+    bool is_symlink(const Path& p) const;
 
     /** Change the owner and group of a file */
     virtual void chown(const Path& path, uint32_t user_id, uint32_t group_id);
@@ -227,10 +223,10 @@ public:
     virtual void access(const Path& path, const Permissions& permissions);
 
     /**
-     * Create and open a file
+     * Create a file
      *
-     * If the file does not exist, first create it with the specified
-     * mode, and then open it.
+     * If the file does not exist, create it
+     *
      */
     virtual void create_file(const Path& path);
 
@@ -317,5 +313,4 @@ private:
     Path current_path_;
 };
 
-} // namespace filesystem
-} // namespace x
+} // namespace filex

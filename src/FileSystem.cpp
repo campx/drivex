@@ -1,38 +1,14 @@
-#include <fusex/FileSystem.h>
-#include <iostream>
+#include <filex/FileSystem.h>
 #include <system_error>
 
 using errc = std::errc;
 using std::make_error_code;
 
-namespace x
+namespace filex
 {
 
-namespace filesystem
-{
-
-std::string error_description(std::errc ec)
-{
-    auto description = std::string{};
-    switch (ec)
-    {
-        case errc::function_not_supported:
-            description = "operation not supported by filesystem";
-            break;
-        case errc::no_such_file_or_directory:
-            description = "No such file or directory";
-            break;
-        case errc::permission_denied:
-            description = "Permission denied";
-            break;
-        default:
-            break;
-    };
-    return description;
-}
-
-Error::Error(errc ec)
-    : std::experimental::filesystem::filesystem_error(error_description(ec),
+Error::Error(errc ec, std::string description)
+    : std::experimental::filesystem::filesystem_error(std::move(description),
                                                       std::make_error_code(ec))
 {
 }
@@ -129,7 +105,7 @@ void FileSystem::copy_symlink(const Path& from,
     unsupported();
 }
 
-bool FileSystem::is_empty(const filesystem::Path& p) const
+bool FileSystem::is_empty(const filex::Path& p) const
 {
     (void)p;
     unsupported();
@@ -155,7 +131,7 @@ FileStatus FileSystem::status(const Path& path) const
     return FileStatus{};
 }
 
-bool FileSystem::status_known(filesystem::FileStatus s) const noexcept
+bool FileSystem::status_known(filex::FileStatus s) const noexcept
 {
     return std::experimental::filesystem::status_known(s);
 }
@@ -172,14 +148,13 @@ Path FileSystem::read_symlink(const Path& path) const
     return Path();
 }
 
-bool FileSystem::create_directory(const Path& path)
+void FileSystem::create_directory(const Path& path)
 {
     (void)path;
     unsupported();
-    return true;
 }
 
-bool FileSystem::create_directories(const Path& p)
+void FileSystem::create_directories(const Path& p)
 {
     auto fullpath = Path();
     for (auto& dir : p)
@@ -190,7 +165,11 @@ bool FileSystem::create_directories(const Path& p)
             create_directory(fullpath);
         }
     }
-    return true;
+    if (!exists(p))
+    {
+        throw Error(std::errc::io_error,
+                    "create_directories(" + std::string(p) + ") failed");
+    }
 }
 
 bool FileSystem::equivalent(const Path& p1, const Path& p2) const
@@ -281,12 +260,12 @@ int FileSystem::write(const Path& path,
     return 0;
 }
 
-bool FileSystem::exists(const filesystem::Path& p) const
+bool FileSystem::exists(const filex::Path& p) const
 {
     return exists(status(p));
 }
 
-bool FileSystem::exists(filesystem::FileStatus s) const
+bool FileSystem::exists(filex::FileStatus s) const
 {
     return std::experimental::filesystem::exists(s);
 }
@@ -437,86 +416,84 @@ void FileSystem::fallocate(const Path& path,
     unsupported();
 }
 
-bool FileSystem::is_block_file(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_block_file(filex::FileStatus s) const noexcept
 {
-    return s.type() == filesystem::FileType::block;
+    return s.type() == filex::FileType::block;
 }
 
-bool FileSystem::is_block_file(const filesystem::Path& p) const
+bool FileSystem::is_block_file(const filex::Path& p) const
 {
     return is_block_file(status(p));
 }
 
-bool FileSystem::is_character_file(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_character_file(filex::FileStatus s) const noexcept
 {
-    return s.type() == filesystem::FileType::character;
+    return s.type() == filex::FileType::character;
 }
 
-bool FileSystem::is_character_file(const filesystem::Path& p) const
+bool FileSystem::is_character_file(const filex::Path& p) const
 {
     return is_character_file(status(p));
 }
 
-bool FileSystem::is_directory(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_directory(filex::FileStatus s) const noexcept
 {
-    return s.type() == filesystem::FileType::directory;
+    return s.type() == filex::FileType::directory;
 }
 
-bool FileSystem::is_directory(const filesystem::Path& p) const
+bool FileSystem::is_directory(const filex::Path& p) const
 {
     return is_directory(status(p));
 }
 
-bool FileSystem::is_fifo(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_fifo(filex::FileStatus s) const noexcept
 {
     return std::experimental::filesystem::is_fifo(s);
 }
 
-bool FileSystem::is_fifo(const filesystem::Path& p) const
+bool FileSystem::is_fifo(const filex::Path& p) const
 {
     return is_fifo(status(p));
 }
 
-bool FileSystem::is_other(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_other(filex::FileStatus s) const noexcept
 {
     return std::experimental::filesystem::is_other(s);
 }
 
-bool FileSystem::is_other(const filesystem::Path& p) const
+bool FileSystem::is_other(const filex::Path& p) const
 {
     return is_other(status(p));
 }
 
-bool FileSystem::is_regular_file(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_regular_file(filex::FileStatus s) const noexcept
 {
-    return s.type() == filesystem::FileType::regular;
+    return s.type() == filex::FileType::regular;
 }
 
-bool FileSystem::is_regular_file(const filesystem::Path& p) const
+bool FileSystem::is_regular_file(const filex::Path& p) const
 {
     return is_regular_file(status(p));
 }
 
-bool FileSystem::is_socket(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_socket(filex::FileStatus s) const noexcept
 {
-    return s.type() == filesystem::FileType::socket;
+    return s.type() == filex::FileType::socket;
 }
 
-bool FileSystem::is_socket(const filesystem::Path& p) const
+bool FileSystem::is_socket(const filex::Path& p) const
 {
     return is_socket(status(p));
 }
 
-bool FileSystem::is_symlink(filesystem::FileStatus s) const noexcept
+bool FileSystem::is_symlink(filex::FileStatus s) const noexcept
 {
-    return s.type() == filesystem::FileType::symlink;
+    return s.type() == filex::FileType::symlink;
 }
 
-bool FileSystem::is_symlink(const filesystem::Path& p) const
+bool FileSystem::is_symlink(const filex::Path& p) const
 {
     return is_symlink(symlink_status(p));
 }
 
-} // namespace filesystem
-
-} // namespace x
+} // namespace filex
