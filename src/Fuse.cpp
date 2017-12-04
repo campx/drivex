@@ -16,7 +16,7 @@ filex::FileSystem* get_impl_from_context()
     return impl;
 }
 
-static int fusex_getattr(const char* path, struct stat* stbuf)
+static int filex_getattr(const char* path, struct stat* stbuf)
 {
     int result = 0;
     memset(stbuf, 0, sizeof(struct stat));
@@ -65,7 +65,7 @@ static int fusex_getattr(const char* path, struct stat* stbuf)
     return result;
 }
 
-static int fusex_readlink(const char* path, char* output, size_t output_size)
+static int filex_readlink(const char* path, char* output, size_t output_size)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -81,7 +81,7 @@ static int fusex_readlink(const char* path, char* output, size_t output_size)
     return result;
 }
 
-static int fusex_mkdir(const char* path, mode_t mode)
+static int filex_mkdir(const char* path, mode_t mode)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -98,7 +98,7 @@ static int fusex_mkdir(const char* path, mode_t mode)
     return result;
 }
 
-static int fusex_unlink(const char* path)
+static int filex_unlink(const char* path)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -113,7 +113,7 @@ static int fusex_unlink(const char* path)
     return result;
 }
 
-static int fusex_rmdir(const char* path)
+static int filex_rmdir(const char* path)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -128,7 +128,7 @@ static int fusex_rmdir(const char* path)
     return result;
 }
 
-static int fusex_symlink(const char* target, const char* link_path)
+static int filex_symlink(const char* target, const char* link_path)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -143,7 +143,7 @@ static int fusex_symlink(const char* target, const char* link_path)
     return result;
 }
 
-static int fusex_rename(const char* oldpath, const char* newpath)
+static int filex_rename(const char* oldpath, const char* newpath)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -158,7 +158,7 @@ static int fusex_rename(const char* oldpath, const char* newpath)
     return result;
 }
 
-static int fusex_link(const char* oldpath, const char* newpath)
+static int filex_link(const char* oldpath, const char* newpath)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -173,7 +173,7 @@ static int fusex_link(const char* oldpath, const char* newpath)
     return result;
 }
 
-static int fusex_chmod(const char* path, mode_t mode)
+static int filex_chmod(const char* path, mode_t mode)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -188,7 +188,7 @@ static int fusex_chmod(const char* path, mode_t mode)
     return result;
 }
 
-static int fusex_chown(const char* path, uid_t user_id, gid_t group_id)
+static int filex_chown(const char* path, uid_t user_id, gid_t group_id)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -203,7 +203,7 @@ static int fusex_chown(const char* path, uid_t user_id, gid_t group_id)
     return result;
 }
 
-static int fusex_truncate(const char* path, off_t length)
+static int filex_truncate(const char* path, off_t length)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -218,7 +218,7 @@ static int fusex_truncate(const char* path, off_t length)
     return result;
 }
 
-static int fusex_open(const char* path, struct ::fuse_file_info* fi)
+static int filex_open(const char* path, struct ::fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -234,7 +234,7 @@ static int fusex_open(const char* path, struct ::fuse_file_info* fi)
     return result;
 }
 
-static int fusex_read(const char* path,
+static int filex_read(const char* path,
                       char* buf,
                       size_t size,
                       off_t offset,
@@ -255,7 +255,7 @@ static int fusex_read(const char* path,
     return result;
 }
 
-static int fusex_write(const char* path,
+static int filex_write(const char* path,
                        const char* buf,
                        size_t size,
                        off_t offset,
@@ -276,7 +276,7 @@ static int fusex_write(const char* path,
     return result;
 }
 
-static int fusex_flush(const char* path, struct fuse_file_info* fi)
+static int filex_flush(const char* path, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -292,7 +292,7 @@ static int fusex_flush(const char* path, struct fuse_file_info* fi)
     return result;
 }
 
-static int fusex_release(const char* path, struct fuse_file_info* fi)
+static int filex_release(const char* path, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -308,7 +308,7 @@ static int fusex_release(const char* path, struct fuse_file_info* fi)
     return result;
 }
 
-static int fusex_fsync(const char* path, int fd, struct fuse_file_info* fi)
+static int filex_fsync(const char* path, int fd, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -324,7 +324,7 @@ static int fusex_fsync(const char* path, int fd, struct fuse_file_info* fi)
     return result;
 }
 
-static int fusex_setxattr(const char* path,
+static int filex_setxattr(const char* path,
                           const char* name,
                           const char* value,
                           size_t size,
@@ -345,7 +345,7 @@ static int fusex_setxattr(const char* path,
 }
 
 static int
-fusex_getxattr(const char* path, const char* name, char* value, size_t size)
+filex_getxattr(const char* path, const char* name, char* value, size_t size)
 {
     auto impl = get_impl_from_context();
     int result = 0;
@@ -361,7 +361,7 @@ fusex_getxattr(const char* path, const char* name, char* value, size_t size)
     return result;
 }
 
-static int fusex_listxattr(const char* path, char* list, size_t size)
+static int filex_listxattr(const char* path, char* list, size_t size)
 {
     auto impl = get_impl_from_context();
     int result = 0;
@@ -391,7 +391,7 @@ static int fusex_listxattr(const char* path, char* list, size_t size)
     return result;
 }
 
-static int fusex_removexattr(const char* path, const char* name)
+static int filex_removexattr(const char* path, const char* name)
 {
     auto impl = get_impl_from_context();
     int result = 0;
@@ -406,7 +406,7 @@ static int fusex_removexattr(const char* path, const char* name)
     return result;
 }
 
-int fusex_opendir(const char* path, struct fuse_file_info* fi)
+int filex_opendir(const char* path, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -427,7 +427,7 @@ int fusex_opendir(const char* path, struct fuse_file_info* fi)
     return result;
 }
 
-static int fusex_readdir(const char* path,
+static int filex_readdir(const char* path,
                          void* buf,
                          fuse_fill_dir_t filler,
                          off_t offset,
@@ -452,7 +452,7 @@ static int fusex_readdir(const char* path,
     return result;
 }
 
-static int fusex_releasedir(const char* path, struct fuse_file_info* fi)
+static int filex_releasedir(const char* path, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -474,7 +474,7 @@ static int fusex_releasedir(const char* path, struct fuse_file_info* fi)
 }
 
 static int
-fusex_fsyncdir(const char* path, int datasync, struct fuse_file_info* fi)
+filex_fsyncdir(const char* path, int datasync, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -490,7 +490,7 @@ fusex_fsyncdir(const char* path, int datasync, struct fuse_file_info* fi)
     return result;
 }
 
-static int fusex_access(const char* path, int mode)
+static int filex_access(const char* path, int mode)
 {
     auto impl = get_impl_from_context();
     auto result = 0;
@@ -506,7 +506,7 @@ static int fusex_access(const char* path, int mode)
 }
 
 static int
-fusex_create(const char* path, mode_t mode, struct fuse_file_info* fi)
+filex_create(const char* path, mode_t mode, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -525,7 +525,7 @@ fusex_create(const char* path, mode_t mode, struct fuse_file_info* fi)
 }
 
 static int
-fusex_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
+filex_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -542,13 +542,13 @@ fusex_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
 }
 
 static int
-fusex_fgetattr(const char* path, struct stat* attr, struct fuse_file_info* fi)
+filex_fgetattr(const char* path, struct stat* attr, struct fuse_file_info* fi)
 {
     (void)fi;
-    return fusex_getattr(path, attr);
+    return filex_getattr(path, attr);
 }
 
-static int fusex_lock(const char* path,
+static int filex_lock(const char* path,
                       struct fuse_file_info* fi,
                       int cmd,
                       struct flock* file_lock)
@@ -568,7 +568,7 @@ static int fusex_lock(const char* path,
     return result;
 }
 
-int fusex_utimens(const char* path, const struct timespec tv[2])
+int filex_utimens(const char* path, const struct timespec tv[2])
 {
     auto impl = get_impl_from_context();
     auto result = 0;
@@ -585,7 +585,7 @@ int fusex_utimens(const char* path, const struct timespec tv[2])
     return result;
 }
 
-int fusex_bmap(const char* path, size_t blocksize, uint64_t* idx)
+int filex_bmap(const char* path, size_t blocksize, uint64_t* idx)
 {
     auto impl = get_impl_from_context();
     auto result = 0;
@@ -600,7 +600,7 @@ int fusex_bmap(const char* path, size_t blocksize, uint64_t* idx)
     return result;
 }
 
-int fusex_ioctl(const char* path,
+int filex_ioctl(const char* path,
                 int cmd,
                 void* arg,
                 struct fuse_file_info* fi,
@@ -621,7 +621,7 @@ int fusex_ioctl(const char* path,
     return result;
 }
 
-int fusex_flock(const char* path, struct fuse_file_info* fi, int op)
+int filex_flock(const char* path, struct fuse_file_info* fi, int op)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -637,7 +637,7 @@ int fusex_flock(const char* path, struct fuse_file_info* fi, int op)
     return result;
 }
 
-int fusex_fallocate(const char* path,
+int filex_fallocate(const char* path,
                     int mode,
                     off_t offset,
                     off_t len,
@@ -673,40 +673,40 @@ void Fuse::mount()
     if (!is_mounted() && nullptr != channel_)
     {
         auto operations = fuse_operations{};
-        operations.getattr = fusex_getattr;
-        operations.readlink = fusex_readlink;
-        operations.mkdir = fusex_mkdir;
-        operations.unlink = fusex_unlink;
-        operations.rmdir = fusex_rmdir;
-        operations.symlink = fusex_symlink;
-        operations.rename = fusex_rename;
-        operations.link = fusex_link;
-        operations.chmod = fusex_chmod;
-        operations.chown = fusex_chown;
-        operations.truncate = fusex_truncate;
-        operations.open = fusex_open;
-        operations.read = fusex_read;
-        operations.write = fusex_write;
-        operations.flush = fusex_flush;
-        operations.release = fusex_release;
-        operations.fsync = fusex_fsync;
-        operations.setxattr = fusex_setxattr;
-        operations.getxattr = fusex_getxattr;
-        operations.listxattr = fusex_listxattr;
-        operations.removexattr = fusex_removexattr;
-        operations.readdir = fusex_readdir;
-        operations.releasedir = fusex_releasedir;
-        operations.fsyncdir = fusex_fsyncdir;
-        operations.access = fusex_access;
-        operations.create = fusex_create;
-        operations.ftruncate = fusex_ftruncate;
-        operations.lock = fusex_lock;
-        operations.fgetattr = fusex_fgetattr;
-        operations.utimens = fusex_utimens;
-        operations.bmap = fusex_bmap;
-        operations.ioctl = fusex_ioctl;
-        operations.flock = fusex_flock;
-        operations.fallocate = fusex_fallocate;
+        operations.getattr = filex_getattr;
+        operations.readlink = filex_readlink;
+        operations.mkdir = filex_mkdir;
+        operations.unlink = filex_unlink;
+        operations.rmdir = filex_rmdir;
+        operations.symlink = filex_symlink;
+        operations.rename = filex_rename;
+        operations.link = filex_link;
+        operations.chmod = filex_chmod;
+        operations.chown = filex_chown;
+        operations.truncate = filex_truncate;
+        operations.open = filex_open;
+        operations.read = filex_read;
+        operations.write = filex_write;
+        operations.flush = filex_flush;
+        operations.release = filex_release;
+        operations.fsync = filex_fsync;
+        operations.setxattr = filex_setxattr;
+        operations.getxattr = filex_getxattr;
+        operations.listxattr = filex_listxattr;
+        operations.removexattr = filex_removexattr;
+        operations.readdir = filex_readdir;
+        operations.releasedir = filex_releasedir;
+        operations.fsyncdir = filex_fsyncdir;
+        operations.access = filex_access;
+        operations.create = filex_create;
+        operations.ftruncate = filex_ftruncate;
+        operations.lock = filex_lock;
+        operations.fgetattr = filex_fgetattr;
+        operations.utimens = filex_utimens;
+        operations.bmap = filex_bmap;
+        operations.ioctl = filex_ioctl;
+        operations.flock = filex_flock;
+        operations.fallocate = filex_fallocate;
 
         auto ops_size = sizeof(operations);
         auto user_data = reinterpret_cast<void*>(pImpl.get());
