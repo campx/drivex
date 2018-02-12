@@ -18,7 +18,10 @@ else()
 endif()
 
 include_directories(${filex_SOURCE_DIR}/include)
-add_library(libfilex src/FileSystem.cpp src/Fuse.cpp)
+add_library(libfilex 
+    src/DirectoryEntry.cpp  include/filex/DirectoryEntry.h
+    src/FileSystem.cpp      include/filex/FileSystem.h
+    src/Fuse.cpp            include/filex/Fuse.h)
 set_target_properties(libfilex PROPERTIES OUTPUT_NAME filex)
 target_link_libraries(libfilex pthread ${FUSE_LIBRARIES})
 

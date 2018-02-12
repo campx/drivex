@@ -9,7 +9,6 @@ namespace filex
 
 using string_view = std::experimental::string_view;
 using std::experimental::filesystem::is_directory;
-using DirectoryEntry = std::experimental::filesystem::directory_entry;
 using FileStatus = std::experimental::filesystem::file_status;
 using FileType = std::experimental::filesystem::file_type;
 using Path = std::experimental::filesystem::path;
