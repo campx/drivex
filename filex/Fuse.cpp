@@ -5,6 +5,7 @@
 #include <system_error>
 
 using string_view = std::experimental::string_view;
+namespace errc = boost::system::errc;
 
 namespace filex
 {
@@ -51,7 +52,8 @@ static int filex_getattr(const char* path, struct stat* stbuf)
                 break;
             default:
             {
-                throw filex::Error(std::errc::no_such_file_or_directory);
+                throw filex::Error(
+                    filex::ErrorCode::no_such_file_or_directory);
                 break;
             }
         }
@@ -416,7 +418,7 @@ int filex_opendir(const char* path, struct fuse_file_info* fi)
         auto status = symlink_status(filex::Path(path));
         if (!filex::is_directory(status))
         {
-            throw filex::Error(std::errc::not_a_directory);
+            throw filex::Error(filex::ErrorCode::not_a_directory);
         }
         impl->open(filex::Path(path), fi->flags);
     }
@@ -462,7 +464,7 @@ static int filex_releasedir(const char* path, struct fuse_file_info* fi)
         auto status = symlink_status(filex::Path(path));
         if (!filex::is_directory(status))
         {
-            throw filex::Error(std::errc::not_a_directory);
+            throw filex::Error(filex::ErrorCode::not_a_directory);
         }
         impl->release(filex::Path(path), fi->flags);
     }

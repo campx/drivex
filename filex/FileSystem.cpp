@@ -1,16 +1,51 @@
 #include <filex/FileSystem.h>
 #include <system_error>
 
-using errc = std::errc;
-using std::make_error_code;
+namespace errc = boost::system::errc;
+namespace filesystem = boost::filesystem;
+using boost::system::error_code;
+using errc::make_error_code;
+using filesystem::filesystem_error;
 
 namespace filex
 {
 
-Error::Error(errc ec, std::string description)
-    : std::experimental::filesystem::filesystem_error(std::move(description),
-                                                      std::make_error_code(ec))
+Error::Error(ErrorCode code, std::string description)
+    : filesystem::filesystem_error(
+          std::move(description),
+          errc::make_error_code(
+              static_cast<boost::system::errc::errc_t>(code)))
 {
+}
+
+FileStatus::FileStatus(FileType file_type, Permissions permissions) noexcept
+    : file_type_(file_type),
+      permissions_(permissions)
+{
+}
+
+FileType FileStatus::type() const noexcept { return file_type_; }
+
+Permissions FileStatus::permissions() const noexcept { return permissions_; }
+
+Permissions operator|(Permissions lhs, Permissions rhs)
+{
+    return static_cast<Permissions>(static_cast<int>(lhs) |
+                                    static_cast<int>(rhs));
+}
+
+void FileStatus::type(FileType file_type) noexcept { file_type_ = file_type; }
+
+void FileStatus::permissions(Permissions permissions) noexcept
+{
+    permissions_ = permissions;
+}
+
+FileStatus::operator filesystem::file_status()
+{
+    return filesystem::file_status(static_cast<filesystem::file_type>(type()),
+                                   static_cast<filesystem::perms>(
+                                       permissions()));
 }
 
 FileSystem::FileSystem() : current_path_(Path("/")) {}
@@ -114,7 +149,7 @@ bool FileSystem::is_empty(const filex::Path& p) const
 
 void FileSystem::unsupported() const
 {
-    throw Error(errc::function_not_supported);
+    throw Error(filex::ErrorCode::function_not_supported);
 }
 
 std::uintmax_t FileSystem::file_size(const Path& path) const
@@ -133,7 +168,7 @@ FileStatus FileSystem::status(const Path& path) const
 
 bool FileSystem::status_known(filex::FileStatus s) const noexcept
 {
-    return std::experimental::filesystem::status_known(s);
+    return filesystem::status_known(s);
 }
 
 FileStatus FileSystem::symlink_status(const Path& path) const
@@ -167,8 +202,8 @@ void FileSystem::create_directories(const Path& p)
     }
     if (!exists(p))
     {
-        throw Error(std::errc::io_error,
-                    "create_directories(" + std::string(p) + ") failed");
+        throw Error(filex::ErrorCode::io_error,
+                    "create_directories(" + p.string() + ") failed");
     }
 }
 
@@ -267,7 +302,7 @@ bool FileSystem::exists(const filex::Path& p) const
 
 bool FileSystem::exists(filex::FileStatus s) const
 {
-    return std::experimental::filesystem::exists(s);
+    return filesystem::exists(s);
 }
 
 void FileSystem::flush(const Path& path)
@@ -448,7 +483,7 @@ bool FileSystem::is_directory(const filex::Path& p) const
 
 bool FileSystem::is_fifo(filex::FileStatus s) const noexcept
 {
-    return std::experimental::filesystem::is_fifo(s);
+    return s.type() == FileType::fifo;
 }
 
 bool FileSystem::is_fifo(const filex::Path& p) const
@@ -458,7 +493,7 @@ bool FileSystem::is_fifo(const filex::Path& p) const
 
 bool FileSystem::is_other(filex::FileStatus s) const noexcept
 {
-    return std::experimental::filesystem::is_other(s);
+    return filesystem::is_other(s);
 }
 
 bool FileSystem::is_other(const filex::Path& p) const

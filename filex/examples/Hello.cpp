@@ -3,9 +3,6 @@
 #include <string.h>
 #include <system_error>
 
-using errc = std::errc;
-using std::make_error_code;
-
 std::uintmax_t Hello::file_size(const filex::Path& p) const
 {
     std::uintmax_t size = 0;
@@ -39,7 +36,7 @@ filex::FileStatus Hello::symlink_status(const filex::Path& path) const
     }
     else
     {
-        throw filex::Error(errc::no_such_file_or_directory);
+        throw filex::Error(filex::ErrorCode::no_such_file_or_directory);
     }
     return result;
 }
@@ -58,11 +55,11 @@ void Hello::open(const filex::Path& path, int flags)
 {
     if (path != hello_path)
     {
-        throw filex::Error(errc::no_such_file_or_directory);
+        throw filex::Error(filex::ErrorCode::no_such_file_or_directory);
     }
     else if ((flags & 3) != O_RDONLY)
     {
-        throw filex::Error(errc::permission_denied);
+        throw filex::Error(filex::ErrorCode::permission_denied);
     }
 }
 
@@ -73,7 +70,7 @@ int Hello::read(const filex::Path& path,
     int size = buffer.size();
     if (path != hello_path)
     {
-        throw filex::Error(errc::no_such_file_or_directory);
+        throw filex::Error(filex::ErrorCode::no_such_file_or_directory);
     }
     auto len = hello_str.size();
     if (offset < len)

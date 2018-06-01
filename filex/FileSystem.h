@@ -1,6 +1,6 @@
 #pragma once
 
-#include <experimental/filesystem>
+#include <boost/filesystem.hpp>
 #include <experimental/string_view>
 #include <fuse.h>
 
@@ -8,16 +8,84 @@ namespace filex
 {
 
 using string_view = std::experimental::string_view;
-using std::experimental::filesystem::is_directory;
-using FileStatus = std::experimental::filesystem::file_status;
-using FileType = std::experimental::filesystem::file_type;
-using Path = std::experimental::filesystem::path;
-using Permissions = std::experimental::filesystem::perms;
-using CopyOptions = std::experimental::filesystem::copy_options;
+using boost::filesystem::is_directory;
+using Path = boost::filesystem::path;
+using CopyOptions = boost::filesystem::copy_option;
 
-struct Error : public std::experimental::filesystem::filesystem_error
+enum class Permissions : int
 {
-    explicit Error(std::errc ec, std::string description = "");
+    owner_read = boost::filesystem::perms::owner_read,
+    owner_write = boost::filesystem::perms::owner_write,
+    owner_exec = boost::filesystem::perms::owner_exe,
+    onwer_all = boost::filesystem::perms::owner_all,
+
+    group_read = boost::filesystem::perms::group_read,
+    group_write = boost::filesystem::perms::group_write,
+    group_exec = boost::filesystem::perms::group_exe,
+    group_all = boost::filesystem::perms::group_all,
+
+    others_read = boost::filesystem::perms::others_read,
+    others_write = boost::filesystem::perms::others_write,
+    others_exec = boost::filesystem::perms::others_exe,
+    others_all = boost::filesystem::perms::others_all,
+
+    perms_not_known = boost::filesystem::perms::perms_not_known
+};
+
+Permissions operator|(Permissions lhs, Permissions rhs);
+
+enum class FileType
+{
+    regular = boost::filesystem::regular_file,
+    directory = boost::filesystem::directory_file,
+    symlink = boost::filesystem::symlink_file,
+    block = boost::filesystem::block_file,
+    character = boost::filesystem::character_file,
+    fifo = boost::filesystem::fifo_file,
+    socket = boost::filesystem::socket_file
+};
+
+enum class ErrorCode
+{
+    directory_not_empty = boost::system::errc::directory_not_empty,
+    file_exists = boost::system::errc::file_exists,
+    file_too_large = boost::system::errc::file_too_large,
+    filename_too_long = boost::system::errc::filename_too_long,
+    function_not_supported = boost::system::errc::function_not_supported,
+    io_error = boost::system::errc::io_error,
+    no_such_file_or_directory = boost::system::errc::no_such_file_or_directory,
+    not_a_directory = boost::system::errc::not_a_directory,
+    permission_denied = boost::system::errc::permission_denied
+};
+
+class FileStatus
+{
+public:
+    explicit FileStatus(
+        FileType file_type,
+        Permissions permissions = Permissions::perms_not_known) noexcept;
+
+    FileStatus() = default;
+    FileStatus(const FileStatus&) = default;
+    FileStatus& operator=(const FileStatus&) = default;
+    ~FileStatus() = default;
+
+    FileType type() const noexcept;
+    Permissions permissions() const noexcept;
+
+    void type(FileType file_type) noexcept;
+    void permissions(Permissions permissions) noexcept;
+
+    operator boost::filesystem::file_status();
+
+private:
+    FileType file_type_;
+    Permissions permissions_;
+};
+
+struct Error : public boost::filesystem::filesystem_error
+{
+    explicit Error(ErrorCode code, std::string description = "");
 };
 
 class FileSystem
