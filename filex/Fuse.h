@@ -1,7 +1,9 @@
 #pragma once
+
 #define FUSE_USE_VERSION 26
+
+#include <fuse/fuse.h>
 #include "FileSystem.h"
-#include <fuse.h>
 
 namespace filex
 {

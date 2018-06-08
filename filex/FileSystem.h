@@ -2,7 +2,6 @@
 
 #include <boost/filesystem.hpp>
 #include <experimental/string_view>
-#include <fuse.h>
 
 namespace filex
 {
@@ -17,7 +16,7 @@ enum class Permissions : int
     owner_read = boost::filesystem::perms::owner_read,
     owner_write = boost::filesystem::perms::owner_write,
     owner_exec = boost::filesystem::perms::owner_exe,
-    onwer_all = boost::filesystem::perms::owner_all,
+    owner_all = boost::filesystem::perms::owner_all,
 
     group_read = boost::filesystem::perms::group_read,
     group_write = boost::filesystem::perms::group_write,
@@ -108,7 +107,7 @@ public:
     void current_path(const Path& p);
 
     /** Determine whether a path exists */
-    bool exists(const FileStatus s) const;
+    bool exists(FileStatus s) const;
     bool exists(const Path& p) const;
 
     /** Get the size of a file */

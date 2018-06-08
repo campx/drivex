@@ -1,8 +1,16 @@
 #include <algorithm>
 #include <filex/Fuse.h>
 #include <iostream>
-#include <string.h>
-#include <system_error>
+#include <numeric>
+
+#if WIN32
+#define S_IFLNK S_IFREG; // treat symlink as regular file on Windows
+#define S_IFSOCK S_IFREG; // treat socket as regular file on Windows
+#define OFF_T long long int
+#else
+#define OFF_T off_t
+#define FUSE_STAT struct stat
+#endif
 
 using string_view = std::experimental::string_view;
 namespace errc = boost::system::errc;
@@ -17,7 +25,7 @@ filex::FileSystem* get_impl_from_context()
     return impl;
 }
 
-static int filex_getattr(const char* path, struct stat* stbuf)
+static int filex_getattr(const char* path, FUSE_STAT* stbuf)
 {
     int result = 0;
     memset(stbuf, 0, sizeof(struct stat));
@@ -50,12 +58,6 @@ static int filex_getattr(const char* path, struct stat* stbuf)
             case filex::FileType::socket:
                 mode |= S_IFSOCK;
                 break;
-            default:
-            {
-                throw filex::Error(
-                    filex::ErrorCode::no_such_file_or_directory);
-                break;
-            }
         }
         stbuf->st_mode = mode;
         stbuf->st_size = impl->file_size(p);
@@ -205,7 +207,7 @@ static int filex_chown(const char* path, uid_t user_id, gid_t group_id)
     return result;
 }
 
-static int filex_truncate(const char* path, off_t length)
+static int filex_truncate(const char* path, OFF_T length)
 {
     int result = 0;
     auto impl = get_impl_from_context();
@@ -237,9 +239,7 @@ static int filex_open(const char* path, struct ::fuse_file_info* fi)
 }
 
 static int filex_read(const char* path,
-                      char* buf,
-                      size_t size,
-                      off_t offset,
+                      char* buf, size_t size, OFF_T offset,
                       struct fuse_file_info* fi)
 {
     (void)fi;
@@ -258,9 +258,7 @@ static int filex_read(const char* path,
 }
 
 static int filex_write(const char* path,
-                       const char* buf,
-                       size_t size,
-                       off_t offset,
+                       const char* buf, size_t size, OFF_T offset,
                        struct fuse_file_info* fi)
 {
     (void)fi;
@@ -430,9 +428,7 @@ int filex_opendir(const char* path, struct fuse_file_info* fi)
 }
 
 static int filex_readdir(const char* path,
-                         void* buf,
-                         fuse_fill_dir_t filler,
-                         off_t offset,
+                         void* buf, fuse_fill_dir_t filler, OFF_T offset,
                          struct fuse_file_info* fi)
 {
     (void)offset;
@@ -527,7 +523,7 @@ filex_create(const char* path, mode_t mode, struct fuse_file_info* fi)
 }
 
 static int
-filex_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
+filex_ftruncate(const char* path, OFF_T offset, struct fuse_file_info* fi)
 {
     (void)fi;
     auto impl = get_impl_from_context();
@@ -544,7 +540,7 @@ filex_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
 }
 
 static int
-filex_fgetattr(const char* path, struct stat* attr, struct fuse_file_info* fi)
+filex_fgetattr(const char* path, FUSE_STAT* attr, struct fuse_file_info* fi)
 {
     (void)fi;
     return filex_getattr(path, attr);
@@ -639,10 +635,7 @@ int filex_flock(const char* path, struct fuse_file_info* fi, int op)
     return result;
 }
 
-int filex_fallocate(const char* path,
-                    int mode,
-                    off_t offset,
-                    off_t len,
+int filex_fallocate(const char* path, int mode, OFF_T offset, OFF_T len,
                     struct fuse_file_info* fi)
 {
     (void)fi;
@@ -706,9 +699,11 @@ void Fuse::mount()
         operations.fgetattr = filex_fgetattr;
         operations.utimens = filex_utimens;
         operations.bmap = filex_bmap;
+#if !WIN32
         operations.ioctl = filex_ioctl;
         operations.flock = filex_flock;
         operations.fallocate = filex_fallocate;
+#endif
 
         auto ops_size = sizeof(operations);
         auto user_data = reinterpret_cast<void*>(pImpl.get());

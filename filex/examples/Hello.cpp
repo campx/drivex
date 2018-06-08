@@ -1,7 +1,11 @@
 #include "Hello.h"
 #include <iostream>
-#include <string.h>
-#include <system_error>
+
+#if WIN32
+auto mount_point = filex::Path("H:\\");
+#else
+auto mount_point  = filex::Path("/mnt/hello");
+#endif
 
 std::uintmax_t Hello::file_size(const filex::Path& p) const
 {
@@ -29,9 +33,9 @@ filex::FileStatus Hello::symlink_status(const filex::Path& path) const
     else if (path == hello_path)
     {
         result.type(filex::FileType::regular);
-        auto perms = filex::Permissions::owner_read |
-                     filex::Permissions::group_read |
-                     filex::Permissions::others_read;
+        auto perms =
+            filex::Permissions::owner_read | filex::Permissions::group_read |
+            filex::Permissions::others_read;
         result.permissions(perms);
     }
     else
@@ -43,10 +47,10 @@ filex::FileStatus Hello::symlink_status(const filex::Path& path) const
 
 std::vector<filex::Path> Hello::read_directory(const filex::Path& path) const
 {
-    (void)path;
+    (void) path;
     std::vector<filex::Path> result;
-    result.push_back(filex::Path("."));
-    result.push_back(filex::Path(".."));
+    result.emplace_back(".");
+    result.emplace_back("..");
     result.push_back(hello_path.filename());
     return result;
 }
@@ -63,9 +67,8 @@ void Hello::open(const filex::Path& path, int flags)
     }
 }
 
-int Hello::read(const filex::Path& path,
-                string_view& buffer,
-                uint64_t offset) const
+int
+Hello::read(const filex::Path& path, string_view& buffer, uint64_t offset) const
 {
     int size = buffer.size();
     if (path != hello_path)
@@ -81,7 +84,7 @@ int Hello::read(const filex::Path& path,
         }
         auto pos = hello_str.data();
         std::advance(pos, offset);
-        auto output = (void*)(buffer.data());
+        auto output = (void*) (buffer.data());
         memcpy(output, pos, size);
     }
     else
@@ -93,11 +96,10 @@ int Hello::read(const filex::Path& path,
 
 int main(int argc, char* argv[])
 {
-    (void)argc;
-    (void)argv;
-    auto mountpoint = filex::Path("/mnt/hello");
+    (void) argc;
+    (void) argv;
     auto hello_fs = std::make_shared<Hello>();
-    auto file_system = filex::Fuse(hello_fs, mountpoint);
+    auto file_system = filex::Fuse(hello_fs, mount_point);
     file_system.mount();
     file_system.run();
     return 0;
