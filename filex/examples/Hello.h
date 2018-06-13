@@ -2,8 +2,6 @@
 
 #include <filex/Fuse.h>
 
-using string_view = std::experimental::string_view;
-
 /** @brief A simple example implementation of a FUSE file system */
 class Hello : public filex::FileSystem
 {
@@ -18,7 +16,7 @@ public:
     void open(const filex::Path& path, int flags) override;
 
     int read(const filex::Path& path,
-             string_view& buffer,
+             filex::string_view& buffer,
              uint64_t offset) const override;
 
 private:

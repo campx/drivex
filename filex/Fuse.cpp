@@ -4,7 +4,8 @@
 #include <numeric>
 
 #if WIN32
-#define S_IFLNK S_IFREG; // treat symlink as regular file on Windows
+#define S_IFIFO 0x1000;
+#define S_IFBLK 0x3000;
 #define S_IFSOCK S_IFREG; // treat socket as regular file on Windows
 #define OFF_T long long int
 #else
@@ -12,7 +13,6 @@
 #define FUSE_STAT struct stat
 #endif
 
-using string_view = std::experimental::string_view;
 namespace errc = boost::system::errc;
 
 namespace filex
@@ -239,7 +239,9 @@ static int filex_open(const char* path, struct ::fuse_file_info* fi)
 }
 
 static int filex_read(const char* path,
-                      char* buf, size_t size, OFF_T offset,
+                      char* buf,
+                      size_t size,
+                      OFF_T offset,
                       struct fuse_file_info* fi)
 {
     (void)fi;
@@ -258,7 +260,9 @@ static int filex_read(const char* path,
 }
 
 static int filex_write(const char* path,
-                       const char* buf, size_t size, OFF_T offset,
+                       const char* buf,
+                       size_t size,
+                       OFF_T offset,
                        struct fuse_file_info* fi)
 {
     (void)fi;
@@ -428,7 +432,9 @@ int filex_opendir(const char* path, struct fuse_file_info* fi)
 }
 
 static int filex_readdir(const char* path,
-                         void* buf, fuse_fill_dir_t filler, OFF_T offset,
+                         void* buf,
+                         fuse_fill_dir_t filler,
+                         OFF_T offset,
                          struct fuse_file_info* fi)
 {
     (void)offset;
@@ -635,7 +641,10 @@ int filex_flock(const char* path, struct fuse_file_info* fi, int op)
     return result;
 }
 
-int filex_fallocate(const char* path, int mode, OFF_T offset, OFF_T len,
+int filex_fallocate(const char* path,
+                    int mode,
+                    OFF_T offset,
+                    OFF_T len,
                     struct fuse_file_info* fi)
 {
     (void)fi;

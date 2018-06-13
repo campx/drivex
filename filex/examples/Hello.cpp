@@ -68,9 +68,9 @@ void Hello::open(const filex::Path& path, int flags)
 }
 
 int
-Hello::read(const filex::Path& path, string_view& buffer, uint64_t offset) const
+Hello::read(const filex::Path& path, filex::string_view& buffer, uint64_t offset) const
 {
-    int size = buffer.size();
+    uint64_t size = buffer.size();
     if (path != hello_path)
     {
         throw filex::Error(filex::ErrorCode::no_such_file_or_directory);

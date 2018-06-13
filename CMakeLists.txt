@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 
 project(filex LANGUAGES CXX)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-
+set(Boost_USE_STATIC_LIBS ON) 
+find_package(Boost 1.66 REQUIRED filesystem)
+include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CMAKE_BINARY_DIR}/include)
+link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(external/gtest)
-add_subdirectory(external/boost)
 
 add_library(libfilex STATIC
     filex/DirectoryEntry.cpp  filex/DirectoryEntry.h
@@ -29,17 +31,14 @@ if (WIN32)
     add_dependencies(libfilex dokany)
 endif ()
 
-add_dependencies(libfilex boost)
 add_executable(hello filex/examples/Hello.cpp)
 set_target_properties(hello PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-
 if (WIN32)
-    message(STATUS "Windows build")
-    target_link_libraries(libfilex pthread boost_filesystem boost_system ${DOKANY})
-    target_link_libraries(hello libfilex)
+    target_link_libraries(libfilex ${Boost_LIBRARIES} )
+    target_link_libraries(hello libfilex ${Boost_FILESYSTEM_LIBRARY} dokanfuse1)
 else ()
-    target_link_libraries(libfilex pthread boost_filesystem boost_system fuse)
+    target_link_libraries(libfilex pthread ${Boost_LIBRARIES} fuse)
     target_link_libraries(hello libfilex)
 endif ()
 

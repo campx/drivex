@@ -1,12 +1,12 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
-#include <experimental/string_view>
+#include <boost/utility/string_ref.hpp>
 
 namespace filex
 {
 
-using string_view = std::experimental::string_view;
+using string_view = boost::string_ref;
 using boost::filesystem::is_directory;
 using Path = boost::filesystem::path;
 using CopyOptions = boost::filesystem::copy_option;

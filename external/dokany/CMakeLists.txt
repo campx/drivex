@@ -11,8 +11,8 @@ ExternalProject_Add(
         PREFIX ${CMAKE_CURRENT_BINARY_DIR}
         BUILD_IN_SOURCE 1
         BUILD_COMMAND ""
-        INSTALL_COMMAND xcopy /y /i Win32\\Msys2\\lib\\* ..\\..\\..\\..\\lib &&
-        xcopy /y /i Win32\\Msys2\\include\\* ..\\..\\..\\..\\include
+        INSTALL_COMMAND xcopy /y /i Win32\\Debug\\dokanfuse1.lib ..\\..\\..\\..\\lib &&
+        xcopy /y /i Win32\\Msys2\\include\\fuse ..\\..\\..\\..\\include\\fuse
         CONFIGURE_COMMAND ""
         UPDATE_COMMAND ""
 )
