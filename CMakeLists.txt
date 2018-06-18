@@ -11,9 +11,9 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(external/gtest)
 
 add_library(libfilex STATIC
-    filex/DirectoryEntry.cpp  filex/DirectoryEntry.h
-    filex/FileSystem.cpp      filex/FileSystem.h
-    filex/Fuse.cpp            filex/Fuse.h)
+        filex/DirectoryEntry.cpp filex/DirectoryEntry.h
+        filex/FileSystem.cpp filex/FileSystem.h
+        filex/Fuse.cpp filex/Fuse.h)
 set_target_properties(libfilex PROPERTIES
         OUTPUT_NAME filex
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib

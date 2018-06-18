@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <filex/Fuse.h>
 #include <iostream>
-#include <numeric>
 
 #if WIN32
 #define S_IFIFO 0x1000;
@@ -57,6 +56,8 @@ static int filex_getattr(const char* path, FUSE_STAT* stbuf)
                 break;
             case filex::FileType::socket:
                 mode |= S_IFSOCK;
+                break;
+            case filex::FileType::not_found:
                 break;
         }
         stbuf->st_mode = mode;

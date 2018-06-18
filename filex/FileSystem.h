@@ -41,7 +41,8 @@ enum class FileType
     block = boost::filesystem::block_file,
     character = boost::filesystem::character_file,
     fifo = boost::filesystem::fifo_file,
-    socket = boost::filesystem::socket_file
+    socket = boost::filesystem::socket_file,
+    not_found = boost::filesystem::file_not_found
 };
 
 enum class ErrorCode
@@ -54,6 +55,7 @@ enum class ErrorCode
     io_error = boost::system::errc::io_error,
     no_such_file_or_directory = boost::system::errc::no_such_file_or_directory,
     not_a_directory = boost::system::errc::not_a_directory,
+    is_a_directory = boost::system::errc::is_a_directory,
     permission_denied = boost::system::errc::permission_denied
 };
 
