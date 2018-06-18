@@ -9,6 +9,7 @@ namespace filex
 using string_view = boost::string_ref;
 using boost::filesystem::is_directory;
 using Path = boost::filesystem::path;
+using DirectoryEntry = boost::filesystem::directory_entry;
 using CopyOptions = boost::filesystem::copy_option;
 
 enum class Permissions : int
