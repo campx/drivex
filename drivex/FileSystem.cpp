@@ -1,4 +1,4 @@
-#include <filex/FileSystem.h>
+#include <drivex/FileSystem.h>
 #include <system_error>
 
 namespace errc = boost::system::errc;
@@ -7,7 +7,7 @@ using boost::system::error_code;
 using errc::make_error_code;
 using filesystem::filesystem_error;
 
-namespace filex
+namespace drivex
 {
 
 Error::Error(ErrorCode code, std::string description)
@@ -140,7 +140,7 @@ void FileSystem::copy_symlink(const Path& from,
     unsupported();
 }
 
-bool FileSystem::is_empty(const filex::Path& p) const
+bool FileSystem::is_empty(const drivex::Path& p) const
 {
     (void)p;
     unsupported();
@@ -149,7 +149,7 @@ bool FileSystem::is_empty(const filex::Path& p) const
 
 void FileSystem::unsupported() const
 {
-    throw Error(filex::ErrorCode::function_not_supported);
+    throw Error(drivex::ErrorCode::function_not_supported);
 }
 
 std::uintmax_t FileSystem::file_size(const Path& path) const
@@ -166,7 +166,7 @@ FileStatus FileSystem::status(const Path& path) const
     return FileStatus{};
 }
 
-bool FileSystem::status_known(filex::FileStatus s) const noexcept
+bool FileSystem::status_known(drivex::FileStatus s) const noexcept
 {
     return filesystem::status_known(s);
 }
@@ -202,7 +202,7 @@ void FileSystem::create_directories(const Path& p)
     }
     if (!exists(p))
     {
-        throw Error(filex::ErrorCode::io_error,
+        throw Error(drivex::ErrorCode::io_error,
                     "create_directories(" + p.string() + ") failed");
     }
 }
@@ -295,12 +295,12 @@ int FileSystem::write(const Path& path,
     return 0;
 }
 
-bool FileSystem::exists(const filex::Path& p) const
+bool FileSystem::exists(const drivex::Path& p) const
 {
     return exists(status(p));
 }
 
-bool FileSystem::exists(filex::FileStatus s) const
+bool FileSystem::exists(drivex::FileStatus s) const
 {
     return filesystem::exists(s);
 }
@@ -451,84 +451,84 @@ void FileSystem::fallocate(const Path& path,
     unsupported();
 }
 
-bool FileSystem::is_block_file(filex::FileStatus s) const noexcept
+bool FileSystem::is_block_file(drivex::FileStatus s) const noexcept
 {
-    return s.type() == filex::FileType::block;
+    return s.type() == drivex::FileType::block;
 }
 
-bool FileSystem::is_block_file(const filex::Path& p) const
+bool FileSystem::is_block_file(const drivex::Path& p) const
 {
     return is_block_file(status(p));
 }
 
-bool FileSystem::is_character_file(filex::FileStatus s) const noexcept
+bool FileSystem::is_character_file(drivex::FileStatus s) const noexcept
 {
-    return s.type() == filex::FileType::character;
+    return s.type() == drivex::FileType::character;
 }
 
-bool FileSystem::is_character_file(const filex::Path& p) const
+bool FileSystem::is_character_file(const drivex::Path& p) const
 {
     return is_character_file(status(p));
 }
 
-bool FileSystem::is_directory(filex::FileStatus s) const noexcept
+bool FileSystem::is_directory(drivex::FileStatus s) const noexcept
 {
-    return s.type() == filex::FileType::directory;
+    return s.type() == drivex::FileType::directory;
 }
 
-bool FileSystem::is_directory(const filex::Path& p) const
+bool FileSystem::is_directory(const drivex::Path& p) const
 {
     return is_directory(status(p));
 }
 
-bool FileSystem::is_fifo(filex::FileStatus s) const noexcept
+bool FileSystem::is_fifo(drivex::FileStatus s) const noexcept
 {
     return s.type() == FileType::fifo;
 }
 
-bool FileSystem::is_fifo(const filex::Path& p) const
+bool FileSystem::is_fifo(const drivex::Path& p) const
 {
     return is_fifo(status(p));
 }
 
-bool FileSystem::is_other(filex::FileStatus s) const noexcept
+bool FileSystem::is_other(drivex::FileStatus s) const noexcept
 {
     return filesystem::is_other(s);
 }
 
-bool FileSystem::is_other(const filex::Path& p) const
+bool FileSystem::is_other(const drivex::Path& p) const
 {
     return is_other(status(p));
 }
 
-bool FileSystem::is_regular_file(filex::FileStatus s) const noexcept
+bool FileSystem::is_regular_file(drivex::FileStatus s) const noexcept
 {
-    return s.type() == filex::FileType::regular;
+    return s.type() == drivex::FileType::regular;
 }
 
-bool FileSystem::is_regular_file(const filex::Path& p) const
+bool FileSystem::is_regular_file(const drivex::Path& p) const
 {
     return is_regular_file(status(p));
 }
 
-bool FileSystem::is_socket(filex::FileStatus s) const noexcept
+bool FileSystem::is_socket(drivex::FileStatus s) const noexcept
 {
-    return s.type() == filex::FileType::socket;
+    return s.type() == drivex::FileType::socket;
 }
 
-bool FileSystem::is_socket(const filex::Path& p) const
+bool FileSystem::is_socket(const drivex::Path& p) const
 {
     return is_socket(status(p));
 }
 
-bool FileSystem::is_symlink(filex::FileStatus s) const noexcept
+bool FileSystem::is_symlink(drivex::FileStatus s) const noexcept
 {
-    return s.type() == filex::FileType::symlink;
+    return s.type() == drivex::FileType::symlink;
 }
 
-bool FileSystem::is_symlink(const filex::Path& p) const
+bool FileSystem::is_symlink(const drivex::Path& p) const
 {
     return is_symlink(symlink_status(p));
 }
 
-} // namespace filex
+} // namespace drivex

@@ -5,7 +5,7 @@
 #include <fuse/fuse.h>
 #include "FileSystem.h"
 
-namespace filex
+namespace drivex
 {
 
 using fuse_handle = fuse;
@@ -29,4 +29,4 @@ private:
     fuse_handle* fuse_;
 };
 
-} // namespace filex
+} // namespace drivex

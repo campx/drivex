@@ -1,7 +1,7 @@
 #pragma once
-#include <filex/FileSystem.h>
+#include <drivex/FileSystem.h>
 
-namespace filex
+namespace drivex
 {
 
 class DirectoryEntry
@@ -38,4 +38,4 @@ private: /** Data */
     Path p_;
 };
 
-} // namespace filex
+} // namespace drivex

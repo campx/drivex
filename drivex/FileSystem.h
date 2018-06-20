@@ -3,7 +3,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/utility/string_ref.hpp>
 
-namespace filex
+namespace drivex
 {
 
 using string_view = boost::string_ref;
@@ -381,4 +381,4 @@ private:
     Path current_path_;
 };
 
-} // namespace filex
+} // namespace drivex

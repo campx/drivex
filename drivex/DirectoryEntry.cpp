@@ -1,5 +1,5 @@
-#include <filex/DirectoryEntry.h>
-namespace filex
+#include <drivex/DirectoryEntry.h>
+namespace drivex
 {
 
 DirectoryEntry::DirectoryEntry(const FileSystem& filesystem, Path p)
@@ -55,4 +55,4 @@ bool DirectoryEntry::operator>=(const DirectoryEntry& rhs) const noexcept
     return p_ >= rhs.p_;
 }
 
-} // namespace filex
+} // namespace drivex

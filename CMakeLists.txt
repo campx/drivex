@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(filex LANGUAGES CXX)
+project(drivex LANGUAGES CXX)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(Boost_USE_STATIC_LIBS ON) 
 find_package(Boost REQUIRED filesystem)
@@ -10,45 +10,45 @@ link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(external/gtest)
 
-add_library(libfilex STATIC
-        filex/DirectoryEntry.cpp filex/DirectoryEntry.h
-        filex/FileSystem.cpp filex/FileSystem.h
-        filex/Fuse.cpp filex/Fuse.h)
-set_target_properties(libfilex PROPERTIES
-        OUTPUT_NAME filex
+add_library(libdrivex STATIC
+        drivex/DirectoryEntry.cpp drivex/DirectoryEntry.h
+        drivex/FileSystem.cpp drivex/FileSystem.h
+        drivex/Fuse.cpp drivex/Fuse.h)
+set_target_properties(libdrivex PROPERTIES
+        OUTPUT_NAME drivex
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 
-target_compile_features(libfilex PUBLIC cxx_return_type_deduction)
+target_compile_features(libdrivex PUBLIC cxx_return_type_deduction)
 if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    target_compile_options(libfilex PUBLIC -Wall -Werror -Wextra
+    target_compile_options(libdrivex PUBLIC -Wall -Werror -Wextra
             -D_FILE_OFFSET_BITS=64 -Bstatic -static-libgcc -static-libstdc++)
 endif()
 
 if (WIN32)
     add_subdirectory(external/dokany)
-    add_dependencies(libfilex dokany)
+    add_dependencies(libdrivex dokany)
 endif ()
 
-add_executable(hello filex/examples/Hello.cpp)
+add_executable(hello drivex/examples/Hello.cpp)
 set_target_properties(hello PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (WIN32)
-    target_link_libraries(libfilex ${Boost_LIBRARIES} )
-    target_link_libraries(hello libfilex ${Boost_FILESYSTEM_LIBRARY} dokanfuse1)
+    target_link_libraries(libdrivex ${Boost_LIBRARIES} )
+    target_link_libraries(hello libdrivex ${Boost_FILESYSTEM_LIBRARY} dokanfuse1)
 else ()
-    target_link_libraries(libfilex pthread ${Boost_LIBRARIES} fuse)
-    target_link_libraries(hello libfilex)
+    target_link_libraries(libdrivex pthread ${Boost_LIBRARIES} fuse)
+    target_link_libraries(hello libdrivex)
 endif ()
 
-target_include_directories(libfilex PUBLIC "${filex_SOURCE_DIR}")
+target_include_directories(libdrivex PUBLIC "${drivex_SOURCE_DIR}")
 
-install(TARGETS libfilex 
+install(TARGETS libdrivex 
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin)
-install(DIRECTORY filex DESTINATION include 
+install(DIRECTORY drivex DESTINATION include 
         FILES_MATCHING PATTERN "*.h" 
         PATTERN "test/*" EXCLUDE
         PATTERN "test" EXCLUDE
@@ -57,14 +57,14 @@ install(DIRECTORY filex DESTINATION include
 
 enable_testing()
 
-add_executable(TestFuse filex/test/TestFuse.cpp)
+add_executable(TestFuse drivex/test/TestFuse.cpp)
 add_dependencies(TestFuse googletest)
 
 if ((${CMAKE_BUILD_TYPE} STREQUAL Debug) 
     AND (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC))
-	target_link_libraries(TestFuse gtestd libfilex)
+	target_link_libraries(TestFuse gtestd libdrivex)
 else()
-	target_link_libraries(TestFuse gtest libfilex)
+	target_link_libraries(TestFuse gtest libdrivex)
 endif()
 
 set_target_properties(TestFuse PROPERTIES RUNTIME_OUTPUT_DIRECTORY
