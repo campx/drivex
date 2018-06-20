@@ -60,7 +60,7 @@ enable_testing()
 add_executable(TestFuse drivex/test/TestFuse.cpp)
 add_dependencies(TestFuse googletest)
 
-if ((${CMAKE_BUILD_TYPE} STREQUAL Debug) 
+if ((${CMAKE_BUILD_TYPE} MATCHES Debug)
     AND (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC))
 	target_link_libraries(TestFuse gtestd libdrivex)
 else()
