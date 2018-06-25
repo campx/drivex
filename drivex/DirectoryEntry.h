@@ -7,15 +7,17 @@ namespace drivex
 class DirectoryEntry
 {
 public: /** Constructors */
-    DirectoryEntry() noexcept = default;
+    DirectoryEntry() = default;
     DirectoryEntry(const DirectoryEntry&) = default;
-    DirectoryEntry(DirectoryEntry&&) noexcept = default;
+
+    DirectoryEntry(DirectoryEntry&&) = default;
     DirectoryEntry(const FileSystem& filesystem, Path p);
     ~DirectoryEntry() = default;
 
 public: /** Modifiers */
     DirectoryEntry& operator=(const DirectoryEntry&) = default;
-    DirectoryEntry& operator=(DirectoryEntry&&) noexcept = default;
+
+    DirectoryEntry& operator=(DirectoryEntry&&) = default;
     void assign(const Path& p);
     void replace_filename(const Path& p);
 
