@@ -8,7 +8,9 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CMAKE_BINARY_DIR}/include)
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CMAKE_BINARY_DIR}/lib)
-add_subdirectory(external/gtest)
+if (NOT TARGET gtest)
+    add_subdirectory(external/googletest)
+endif()
 
 add_library(libdrivex STATIC
         drivex/DirectoryEntry.cpp drivex/DirectoryEntry.h
@@ -58,14 +60,8 @@ install(DIRECTORY drivex DESTINATION include
 enable_testing()
 
 add_executable(TestFuse drivex/test/TestFuse.cpp)
-add_dependencies(TestFuse googletest)
 
-if ((${CMAKE_BUILD_TYPE} MATCHES Debug)
-    AND (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC))
-	target_link_libraries(TestFuse gtestd libdrivex)
-else()
-	target_link_libraries(TestFuse gtest libdrivex)
-endif()
+target_link_libraries(TestFuse gtest libdrivex)
 
 set_target_properties(TestFuse PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                       ${CMAKE_CURRENT_BINARY_DIR}/test)
