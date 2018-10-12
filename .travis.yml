@@ -21,8 +21,8 @@ script:
           && make test;
       fi
     - if [ $TRAVIS_OS_NAME == linux ]; then 
-          docker build -t jbrooker/fusex . 
-          && docker run -v $PWD:/work/source/ --privileged -it jbrooker/fusex;
+          docker build -t lockblox/drivex .
+          && docker run -v $PWD:/work/source/ --privileged -it lockblox/drivex;
       fi
 branches:
     only:

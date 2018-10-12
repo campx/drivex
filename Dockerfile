@@ -1,4 +1,4 @@
-FROM jbrooker/cpp-quality:latest
+FROM lockblox/orthodox:latest
 MAINTAINER Jonathan Brooker <jonathan.brooker@gmail.com>
 
 RUN apt-get update \
