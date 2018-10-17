@@ -30,32 +30,7 @@ static int drivex_getattr(const char* path, FUSE_STAT* stbuf) {
   try {
     auto p = drivex::Path(path);
     auto status = impl->symlink_status(p);
-    auto mode = static_cast<mode_t>(status.permissions());
-    switch (status.type()) {
-      case drivex::FileType::regular:
-        mode |= S_IFREG;
-        break;
-      case drivex::FileType::directory:
-        mode |= S_IFDIR;
-        break;
-      case drivex::FileType::symlink:
-        mode |= S_IFLNK;
-        break;
-      case drivex::FileType::block:
-        mode |= S_IFBLK;
-        break;
-      case drivex::FileType::character:
-        mode |= S_IFCHR;
-        break;
-      case drivex::FileType::fifo:
-        mode |= S_IFIFO;
-        break;
-      case drivex::FileType::socket:
-        mode |= S_IFSOCK;
-        break;
-      case drivex::FileType::not_found:
-        break;
-    }
+    auto mode = static_cast<mode_t>(status);
     stbuf->st_mode = mode;
     stbuf->st_size = impl->file_size(p);
   } catch (const drivex::Error& e) {

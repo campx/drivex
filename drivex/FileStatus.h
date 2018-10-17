@@ -7,9 +7,10 @@ namespace drivex {
 
 class FileStatus {
  public:
-  explicit FileStatus(
-      FileType file_type,
-      Permissions permissions = Permissions::perms_not_known) noexcept;
+  explicit FileStatus(FileType file_type,
+                      Permissions permissions = Permissions::perms_not_known) noexcept;
+
+  explicit FileStatus(unsigned int mode);
 
   FileStatus() = default;
   FileStatus(const FileStatus&) = default;
@@ -22,7 +23,8 @@ class FileStatus {
   void type(FileType file_type) noexcept;
   void permissions(Permissions permissions) noexcept;
 
-  operator boost::filesystem::file_status();
+  operator boost::filesystem::file_status() const;
+  explicit operator unsigned int() const;
 
  private:
   FileType file_type_;

@@ -11,25 +11,6 @@ namespace lockblox {
 
 namespace drivex {
 
-FileStatus::FileStatus(FileType file_type, Permissions permissions) noexcept
-    : file_type_(file_type),
-      permissions_(permissions) {}
-
-FileType FileStatus::type() const noexcept { return file_type_; }
-
-Permissions FileStatus::permissions() const noexcept { return permissions_; }
-
-void FileStatus::type(FileType file_type) noexcept { file_type_ = file_type; }
-
-void FileStatus::permissions(Permissions permissions) noexcept {
-  permissions_ = permissions;
-}
-
-FileStatus::operator filesystem::file_status() {
-  return filesystem::file_status(static_cast<filesystem::file_type>(type()),
-                                 static_cast<filesystem::perms>(permissions()));
-}
-
 FileSystem::FileSystem(Path initial_path)
     : current_path_(std::move(initial_path)) {}
 
@@ -92,7 +73,7 @@ void FileSystem::copy(const Path& from, const Path& to, CopyOptions options) {
 }
 
 /* TODO default implementation, read symlink create another symlink with same
-*/
+ */
 void FileSystem::copy_symlink(const Path& from, const Path& to,
                               CopyOptions options) {
   (void)from;

@@ -1,6 +1,5 @@
 #pragma once
-
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace lockblox {
 namespace drivex {
@@ -25,5 +24,7 @@ enum class Permissions : unsigned int {
 };
 
 Permissions operator|(Permissions lhs, Permissions rhs);
+Permissions operator&(Permissions lhs, Permissions rhs);
+
 }  // namespace drivex
 }  // namespace lockblox

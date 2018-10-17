@@ -3,6 +3,7 @@
 
 namespace lockblox {
 namespace drivex {
+
 enum class FileType {
   regular = boost::filesystem::regular_file,
   directory = boost::filesystem::directory_file,
@@ -13,5 +14,6 @@ enum class FileType {
   socket = boost::filesystem::socket_file,
   not_found = boost::filesystem::file_not_found
 };
-}
-}
+
+}  // namespace drivex
+}  // namespace lockblox
