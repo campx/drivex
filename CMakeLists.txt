@@ -33,7 +33,7 @@ set_target_properties(libdrivex PROPERTIES
 
 target_compile_features(libdrivex PUBLIC cxx_return_type_deduction)
 if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    target_compile_options(libdrivex PUBLIC -Wall -Werror -Wextra
+    target_compile_options(libdrivex PRIVATE -Wall -Werror -Wextra
             -D_FILE_OFFSET_BITS=64 -Bstatic)
 endif ()
 
