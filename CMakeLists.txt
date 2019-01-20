@@ -1,16 +1,20 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
-project(drivex LANGUAGES CXX)
+include("3rdparty/gate/cmake/HunterGate.cmake")
+HunterGate(
+        URL "https://github.com/ruslo/hunter/archive/v0.23.68.tar.gz"
+        SHA1 "d7365dfaf3db5c0939f3c62141a2ec1eac660962"
+)
+
+project(drivex)
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost REQUIRED filesystem)
+hunter_add_package(Boost COMPONENTS system filesystem)
+find_package(Boost CONFIG REQUIRED system filesystem)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CMAKE_BINARY_DIR}/include)
-link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CMAKE_BINARY_DIR}/lib)
-if (NOT TARGET gtest)
-    add_subdirectory(external/googletest)
-endif ()
 
 add_library(libdrivex STATIC
         drivex/DirectoryEntry.cpp drivex/DirectoryEntry.h
@@ -45,7 +49,7 @@ if (WIN32)
     target_link_libraries(libdrivex ${Boost_LIBRARIES})
     target_link_libraries(hello libdrivex ${Boost_FILESYSTEM_LIBRARY} dokanfuse1)
 else ()
-    target_link_libraries(libdrivex pthread ${Boost_LIBRARIES} fuse)
+    target_link_libraries(libdrivex PUBLIC pthread ${Boost_LIBRARIES} fuse)
     target_link_libraries(hello libdrivex)
 endif ()
 
@@ -63,13 +67,4 @@ install(DIRECTORY drivex DESTINATION include
         PATTERN "examples" EXCLUDE)
 
 enable_testing()
-
-add_executable(TestFuse drivex/test/TestFuse.cpp)
-
-target_link_libraries(TestFuse gtest libdrivex)
-
-set_target_properties(TestFuse PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-        ${CMAKE_CURRENT_BINARY_DIR}/test)
-add_test(NAME TestFuse
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test/TestFuse)
+add_subdirectory(drivex/test)
