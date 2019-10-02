@@ -4,7 +4,7 @@
 namespace lockblox {
 namespace drivex {
 
-enum class ErrorCode {
+enum class error_code {
   directory_not_empty = boost::system::errc::directory_not_empty,
   file_exists = boost::system::errc::file_exists,
   file_too_large = boost::system::errc::file_too_large,

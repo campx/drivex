@@ -17,9 +17,9 @@ namespace errc = boost::system::errc;
 namespace lockblox {
 namespace drivex {
 
-drivex::FileSystem* get_impl_from_context() {
+drivex::filesystem* get_impl_from_context() {
   struct fuse_context* context = fuse_get_context();
-  auto impl = static_cast<drivex::FileSystem*>(context->private_data);
+  auto impl = static_cast<drivex::filesystem*>(context->private_data);
   return impl;
 }
 
@@ -33,7 +33,7 @@ static int drivex_getattr(const char* path, FUSE_STAT* stbuf) {
     auto mode = static_cast<mode_t>(status);
     stbuf->st_mode = mode;
     stbuf->st_size = impl->file_size(p);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -45,7 +45,7 @@ static int drivex_readlink(const char* path, char* output, size_t output_size) {
   try {
     auto target = impl->read_symlink(drivex::Path(path)).string();
     strncpy(output, target.c_str(), output_size);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -57,8 +57,8 @@ static int drivex_mkdir(const char* path, mode_t mode) {
   try {
     auto p = drivex::Path(path);
     impl->create_directory(p);
-    impl->permissions(p, drivex::Permissions(mode));
-  } catch (const drivex::Error& e) {
+    impl->permissions(p, drivex::permissions(mode));
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -69,7 +69,7 @@ static int drivex_unlink(const char* path) {
   auto impl = get_impl_from_context();
   try {
     impl->remove(drivex::Path(path));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -80,7 +80,7 @@ static int drivex_rmdir(const char* path) {
   auto impl = get_impl_from_context();
   try {
     impl->remove(drivex::Path(path));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -91,7 +91,7 @@ static int drivex_symlink(const char* target, const char* link_path) {
   auto impl = get_impl_from_context();
   try {
     impl->create_symlink(drivex::Path(target), drivex::Path(link_path));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -102,7 +102,7 @@ static int drivex_rename(const char* oldpath, const char* newpath) {
   auto impl = get_impl_from_context();
   try {
     impl->rename(drivex::Path(oldpath), drivex::Path(newpath));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -113,7 +113,7 @@ static int drivex_link(const char* oldpath, const char* newpath) {
   auto impl = get_impl_from_context();
   try {
     impl->link(drivex::Path(oldpath), drivex::Path(newpath));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -123,8 +123,8 @@ static int drivex_chmod(const char* path, mode_t mode) {
   int result = 0;
   auto impl = get_impl_from_context();
   try {
-    impl->permissions(drivex::Path(path), drivex::Permissions(mode));
-  } catch (const drivex::Error& e) {
+    impl->permissions(drivex::Path(path), drivex::permissions(mode));
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -135,7 +135,7 @@ static int drivex_chown(const char* path, uid_t user_id, gid_t group_id) {
   auto impl = get_impl_from_context();
   try {
     impl->chown(drivex::Path(path), user_id, group_id);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -146,7 +146,7 @@ static int drivex_truncate(const char* path, OFF_T length) {
   auto impl = get_impl_from_context();
   try {
     impl->truncate(drivex::Path(path), length);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -158,7 +158,7 @@ static int drivex_open(const char* path, struct fuse_file_info* fi) {
   auto result = 0;
   try {
     impl->open(drivex::Path(path), fi->flags);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -172,7 +172,7 @@ static int drivex_read(const char* path, char* buf, size_t size, OFF_T offset,
   int result = 0;
   try {
     result = impl->read(drivex::Path(path), buffer, offset);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -186,7 +186,7 @@ static int drivex_write(const char* path, const char* buf, size_t size,
   int result = 0;
   try {
     result = impl->write(drivex::Path(path), buffer, offset);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -198,7 +198,7 @@ static int drivex_flush(const char* path, struct fuse_file_info* fi) {
   int result = 0;
   try {
     impl->flush(drivex::Path(path));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -210,7 +210,7 @@ static int drivex_release(const char* path, struct fuse_file_info* fi) {
   int result = 0;
   try {
     impl->release(drivex::Path(path), fi->flags);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -222,7 +222,7 @@ static int drivex_fsync(const char* path, int fd, struct fuse_file_info* fi) {
   int result = 0;
   try {
     impl->fsync(drivex::Path(path), fd);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -235,7 +235,7 @@ static int drivex_setxattr(const char* path, const char* name,
   try {
     auto attribute = std::make_pair(name, string_view(value, size));
     impl->setxattr(drivex::Path(path), attribute, flags);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -248,7 +248,7 @@ static int drivex_getxattr(const char* path, const char* name, char* value,
   try {
     auto attribute = impl->getxattr(drivex::Path(path), std::string(name));
     memcpy(value, attribute.second.data(), size);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -270,7 +270,7 @@ static int drivex_listxattr(const char* path, char* list, size_t size) {
       }
       memcpy(list, attribute_array.data(), size);
     }  // else just return length of array
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -281,7 +281,7 @@ static int drivex_removexattr(const char* path, const char* name) {
   int result = 0;
   try {
     impl->removexattr(drivex::Path(path), std::string(name));
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -294,10 +294,10 @@ int drivex_opendir(const char* path, struct fuse_file_info* fi) {
   try {
     auto status = symlink_status(drivex::Path(path));
     if (!drivex::is_directory(status)) {
-      throw drivex::Error(drivex::ErrorCode::not_a_directory);
+      throw drivex::error(drivex::error_code::not_a_directory);
     }
     impl->open(drivex::Path(path), fi->flags);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -314,7 +314,7 @@ static int drivex_readdir(const char* path, void* buf, fuse_fill_dir_t filler,
     for (const auto& entry : entries) {
       filler(buf, entry.string().c_str(), nullptr, 0);
     }
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -327,10 +327,10 @@ static int drivex_releasedir(const char* path, struct fuse_file_info* fi) {
   try {
     auto status = symlink_status(drivex::Path(path));
     if (!drivex::is_directory(status)) {
-      throw drivex::Error(drivex::ErrorCode::not_a_directory);
+      throw drivex::error(drivex::error_code::not_a_directory);
     }
     impl->release(drivex::Path(path), fi->flags);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -343,7 +343,7 @@ static int drivex_fsyncdir(const char* path, int datasync,
   auto result = 0;
   try {
     impl->fsyncdir(drivex::Path(path), datasync);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -353,8 +353,8 @@ static int drivex_access(const char* path, int mode) {
   auto impl = get_impl_from_context();
   auto result = 0;
   try {
-    impl->access(drivex::Path(path), static_cast<drivex::Permissions>(mode));
-  } catch (const drivex::Error& e) {
+    impl->access(drivex::Path(path), static_cast<drivex::permissions>(mode));
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -368,8 +368,8 @@ static int drivex_create(const char* path, mode_t mode,
   try {
     auto p = drivex::Path(path);
     impl->create_file(p);
-    impl->permissions(p, static_cast<drivex::Permissions>(mode));
-  } catch (const drivex::Error& e) {
+    impl->permissions(p, static_cast<drivex::permissions>(mode));
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -382,7 +382,7 @@ static int drivex_ftruncate(const char* path, OFF_T offset,
   auto result = 0;
   try {
     impl->truncate(drivex::Path(path), offset);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -402,7 +402,7 @@ static int drivex_lock(const char* path, struct fuse_file_info* fi, int cmd,
   auto result = 0;
   try {
     impl->lock(drivex::Path(path), cmd);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -415,7 +415,7 @@ int drivex_utimens(const char* path, const struct timespec tv[2]) {
     auto p = drivex::Path(path);
     impl->last_read_time(p, tv[0].tv_sec);
     impl->last_write_time(p, tv[1].tv_sec);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -426,7 +426,7 @@ int drivex_bmap(const char* path, size_t blocksize, uint64_t* idx) {
   auto result = 0;
   try {
     *idx = impl->bmap(drivex::Path(path), blocksize);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -439,7 +439,7 @@ int drivex_ioctl(const char* path, int cmd, void* arg,
   auto result = 0;
   try {
     impl->ioctl(drivex::Path(path), cmd, arg, flags, data);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -451,7 +451,7 @@ int drivex_flock(const char* path, struct fuse_file_info* fi, int op) {
   auto result = 0;
   try {
     impl->lock(drivex::Path(path), op);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
@@ -464,17 +464,18 @@ int drivex_fallocate(const char* path, int mode, OFF_T offset, OFF_T len,
   auto result = 0;
   try {
     impl->fallocate(drivex::Path(path), mode, offset, len);
-  } catch (const drivex::Error& e) {
+  } catch (const drivex::error& e) {
     result = -e.code().value();
   }
   return result;
 }
 
-Fuse::Fuse(std::shared_ptr<drivex::FileSystem> impl, drivex::Path mountpoint)
+Fuse::Fuse(std::shared_ptr<drivex::filesystem> impl, drivex::Path mountpoint)
     : pImpl(std::move(impl)),
       is_mounted_(false),
       mountpoint_(std::move(mountpoint)),
-      channel_(fuse_mount(mountpoint_.string().c_str(), nullptr)) {}
+      channel_(fuse_mount(mountpoint_.string().c_str(), nullptr)),
+      fuse_(nullptr) {}
 
 Fuse::~Fuse() { unmount(); }
 

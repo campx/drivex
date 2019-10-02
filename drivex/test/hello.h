@@ -3,11 +3,11 @@
 #include <drivex/Fuse.h>
 
 /** @brief A simple example implementation of a FUSE file system */
-class Hello : public lockblox::drivex::FileSystem {
+class hello : public lockblox::drivex::filesystem {
  public:
   std::uintmax_t file_size(const lockblox::drivex::Path& p) const override;
 
-  lockblox::drivex::FileStatus symlink_status(
+  lockblox::drivex::file_status symlink_status(
       const lockblox::drivex::Path& path) const override;
 
   std::vector<lockblox::drivex::Path> read_directory(

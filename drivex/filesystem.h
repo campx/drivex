@@ -1,8 +1,8 @@
 #pragma once
 
 #include <drivex/Error.h>
-#include <drivex/FileStatus.h>
 #include <drivex/Permissions.h>
+#include <drivex/file_status.h>
 #include <boost/filesystem.hpp>
 #include <boost/utility/string_ref.hpp>
 
@@ -14,10 +14,10 @@ using string_view = boost::string_ref;
 using boost::filesystem::is_directory;
 using CopyOptions = boost::filesystem::copy_option;
 
-class FileSystem {
+class filesystem {
  public:
-  explicit FileSystem(Path initial_path = Path("/"));
-  virtual ~FileSystem() = default;
+  explicit filesystem(Path initial_path = Path("/"));
+  virtual ~filesystem() = default;
 
   /** Get absolute path */
   Path absolute(const Path& path) const noexcept;
@@ -33,14 +33,14 @@ class FileSystem {
   void current_path(const Path& p);
 
   /** Determine whether a path exists */
-  bool exists(FileStatus s) const;
+  bool exists(file_status s) const;
   bool exists(const Path& p) const;
 
   /** Get the size of a file */
   virtual std::uintmax_t file_size(const Path& path) const;
 
   /** Get file attributes, following symlinks */
-  virtual FileStatus status(const Path& path) const;
+  virtual file_status status(const Path& path) const;
 
   /** Copy a file or directory */
   virtual void copy(const Path& from, const Path& to, CopyOptions options);
@@ -49,10 +49,10 @@ class FileSystem {
   virtual void copy_symlink(const Path& from, const Path& to,
                             CopyOptions options);
 
-  bool status_known(FileStatus s) const noexcept;
+  bool status_known(file_status s) const noexcept;
 
   /** Get file attributes without following symlinks */
-  virtual FileStatus symlink_status(const Path& path) const;
+  virtual file_status symlink_status(const Path& path) const;
 
   /** Read the target of a symbolic link */
   virtual Path read_symlink(const Path& path) const;
@@ -78,26 +78,26 @@ class FileSystem {
   virtual void link(const Path& from, const Path& to);
 
   /** Change the permission bits of a file */
-  virtual void permissions(const Path& path, Permissions permissions);
+  virtual void permissions(const Path& path, permissions permissions);
 
   virtual bool is_empty(const Path& p) const;
 
   // File types
-  bool is_block_file(FileStatus s) const noexcept;
+  bool is_block_file(file_status s) const noexcept;
   bool is_block_file(const Path& p) const;
-  bool is_character_file(FileStatus s) const noexcept;
+  bool is_character_file(file_status s) const noexcept;
   bool is_character_file(const Path& p) const;
-  bool is_directory(FileStatus s) const noexcept;
+  bool is_directory(file_status s) const noexcept;
   bool is_directory(const Path& p) const;
-  bool is_fifo(FileStatus s) const noexcept;
+  bool is_fifo(file_status s) const noexcept;
   bool is_fifo(const Path& p) const;
-  bool is_other(FileStatus s) const noexcept;
+  bool is_other(file_status s) const noexcept;
   bool is_other(const Path& p) const;
-  bool is_regular_file(FileStatus s) const noexcept;
+  bool is_regular_file(file_status s) const noexcept;
   bool is_regular_file(const Path& p) const;
-  bool is_socket(FileStatus s) const noexcept;
+  bool is_socket(file_status s) const noexcept;
   bool is_socket(const Path& p) const;
-  bool is_symlink(FileStatus s) const noexcept;
+  bool is_symlink(file_status s) const noexcept;
   bool is_symlink(const Path& p) const;
 
   /** Change the owner and group of a file */
@@ -177,7 +177,7 @@ class FileSystem {
    * An attribute is a key-value pair where the key is a string and the value
    * is a binary blob */
   virtual void setxattr(const Path& path,
-                        std::pair<std::string, string_view> attribute,
+                        const std::pair<std::string, string_view>& attribute,
                         int flags);
 
   /** Get extended attributes
@@ -209,7 +209,7 @@ class FileSystem {
    * 'default_permissions' mount option is given, this method is not
    * called.
    */
-  virtual void access(const Path& path, const Permissions& permissions);
+  virtual void access(const Path& path, const drivex::permissions& permissions);
 
   /**
    * Create a file

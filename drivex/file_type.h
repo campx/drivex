@@ -4,7 +4,7 @@
 namespace lockblox {
 namespace drivex {
 
-enum class FileType {
+enum class file_type {
   regular = boost::filesystem::regular_file,
   directory = boost::filesystem::directory_file,
   symlink = boost::filesystem::symlink_file,

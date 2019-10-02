@@ -3,13 +3,13 @@
 namespace lockblox {
 namespace drivex {
 
-Permissions operator|(Permissions lhs, Permissions rhs) {
-  return static_cast<Permissions>(static_cast<unsigned int>(lhs) |
+permissions operator|(permissions lhs, permissions rhs) {
+  return static_cast<permissions>(static_cast<unsigned int>(lhs) |
                                   static_cast<unsigned int>(rhs));
 }
 
-Permissions operator&(Permissions lhs, Permissions rhs) {
-  return static_cast<Permissions>(static_cast<unsigned int>(lhs) &
+permissions operator&(permissions lhs, permissions rhs) {
+  return static_cast<permissions>(static_cast<unsigned int>(lhs) &
                                   static_cast<unsigned int>(rhs));
 }
 

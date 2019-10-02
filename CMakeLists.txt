@@ -12,22 +12,22 @@ find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(libdrivex STATIC
-        drivex/DirectoryEntry.cpp
-        drivex/DirectoryEntry.h
-        drivex/FileSystem.cpp
-        drivex/FileSystem.h
-        drivex/Permissions.cpp
-        drivex/Permissions.h
-        drivex/Fuse.cpp
-        drivex/Fuse.h
-        drivex/FileType.cpp
-        drivex/FileType.h
-        drivex/Error.cpp
-        drivex/Error.h
-        drivex/FileStatus.cpp
-        drivex/FileStatus.h
-        drivex/ErrorCode.cpp
-        drivex/ErrorCode.h)
+        drivex/directory_entry.cpp
+        drivex/directory_entry.h
+        drivex/filesystem.cpp
+        drivex/filesystem.h
+        drivex/permissions.cpp
+        drivex/permissions.h
+        drivex/fuse.cpp
+        drivex/fuse.h
+        drivex/file_type.cpp
+        drivex/file_type.h
+        drivex/error.cpp
+        drivex/error.h
+        drivex/file_status.cpp
+        drivex/file_status.h
+        drivex/error_code.cpp
+        drivex/error_code.h)
 
 set_target_properties(libdrivex PROPERTIES
         OUTPUT_NAME drivex

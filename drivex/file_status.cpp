@@ -1,6 +1,6 @@
-#include <drivex/FileStatus.h>
-#include <drivex/FileType.h>
 #include <drivex/Permissions.h>
+#include <drivex/file_status.h>
+#include <drivex/file_type.h>
 
 namespace {
 
@@ -20,81 +20,81 @@ enum class ModeType : unsigned int {
 namespace lockblox {
 namespace drivex {
 
-FileStatus::FileStatus(FileType file_type, Permissions permissions) noexcept
+file_status::file_status(file_type file_type,
+                         drivex::permissions permissions) noexcept
     : file_type_(file_type), permissions_(permissions) {}
 
-FileStatus::FileStatus(unsigned int mode) {
+file_status::file_status(unsigned int mode) {
   auto file_type = static_cast<ModeType>(mode & 0170000u);
   switch (file_type) {
     case ModeType::socket:
-      file_type_ = FileType::socket;
+      file_type_ = file_type::socket;
       break;
     case ModeType::symlink:
-      file_type_ = FileType::symlink;
+      file_type_ = file_type::symlink;
       break;
     case ModeType::regular:
-      file_type_ = FileType::regular;
+      file_type_ = file_type::regular;
       break;
     case ModeType::block:
-      file_type_ = FileType::block;
+      file_type_ = file_type::block;
       break;
     case ModeType::directory:
-      file_type_ = FileType::directory;
+      file_type_ = file_type::directory;
       break;
     case ModeType::character:
-      file_type_ = FileType::character;
+      file_type_ = file_type::character;
       break;
     case ModeType::fifo:
-      file_type_ = FileType::fifo;
+      file_type_ = file_type::fifo;
       break;
     case ModeType::not_found:
-      file_type_ = FileType::not_found;
+      file_type_ = file_type::not_found;
       break;
   }
-  permissions_ = static_cast<Permissions>(mode & ~0170000u);
+  permissions_ = static_cast<drivex::permissions>(mode & ~0170000u);
 }
 
-FileType FileStatus::type() const noexcept { return file_type_; }
+file_type file_status::type() const noexcept { return file_type_; }
 
-Permissions FileStatus::permissions() const noexcept { return permissions_; }
+permissions file_status::permissions() const noexcept { return permissions_; }
 
-void FileStatus::type(FileType file_type) noexcept { file_type_ = file_type; }
+void file_status::type(file_type file_type) noexcept { file_type_ = file_type; }
 
-void FileStatus::permissions(Permissions permissions) noexcept {
+void file_status::permissions(drivex::permissions permissions) noexcept {
   permissions_ = permissions;
 }
 
-FileStatus::operator boost::filesystem::file_status() const {
-  return boost::filesystem::file_status(
-      static_cast<boost::filesystem::file_type>(type()),
-      static_cast<boost::filesystem::perms>(permissions()));
+file_status::operator boost::filesystem::file_status() const {
+  return {static_cast<boost::filesystem::file_type>(type()),
+          static_cast<boost::filesystem::perms>(permissions())};
 }
 
-FileStatus::operator unsigned int() const {
+file_status::operator unsigned int() const {
   auto mode = static_cast<unsigned int>(permissions());
   switch (type()) {
-    case FileType::regular:
+    case file_type::regular:
       mode |= static_cast<unsigned int>(ModeType::regular);
       break;
-    case FileType::directory:
+    case file_type::directory:
       mode |= static_cast<unsigned int>(ModeType::directory);
       break;
-    case FileType::symlink:
+    case file_type::symlink:
       mode |= static_cast<unsigned int>(ModeType::symlink);
       break;
-    case FileType::block:
+    case file_type::block:
       mode |= static_cast<unsigned int>(ModeType::block);
       break;
-    case FileType::character:
+    case file_type::character:
       mode |= static_cast<unsigned int>(ModeType::character);
       break;
-    case FileType::fifo:
+    case file_type::fifo:
       mode |= static_cast<unsigned int>(ModeType::fifo);
       break;
-    case FileType::socket:
+    case file_type::socket:
       mode |= static_cast<unsigned int>(ModeType::socket);
       break;
-    case FileType::not_found:
+    case file_type::not_found:
       break;
   }
   return mode;

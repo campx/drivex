@@ -4,7 +4,7 @@
 namespace lockblox {
 namespace drivex {
 
-enum class Permissions : unsigned int {
+enum class permissions : unsigned int {
   owner_read = boost::filesystem::perms::owner_read,
   owner_write = boost::filesystem::perms::owner_write,
   owner_exec = boost::filesystem::perms::owner_exe,
@@ -23,8 +23,8 @@ enum class Permissions : unsigned int {
   perms_not_known = boost::filesystem::perms::perms_not_known
 };
 
-Permissions operator|(Permissions lhs, Permissions rhs);
-Permissions operator&(Permissions lhs, Permissions rhs);
+permissions operator|(permissions lhs, permissions rhs);
+permissions operator&(permissions lhs, permissions rhs);
 
 }  // namespace drivex
 }  // namespace lockblox

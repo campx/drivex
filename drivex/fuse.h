@@ -2,7 +2,7 @@
 
 #define FUSE_USE_VERSION 26
 
-#include <drivex/FileSystem.h>
+#include <drivex/filesystem.h>
 #include <fuse/fuse.h>
 
 namespace lockblox {
@@ -12,7 +12,7 @@ using fuse_handle = fuse;
 
 class Fuse {
  public:
-  Fuse(std::shared_ptr<FileSystem> impl, Path mountpoint);
+  Fuse(std::shared_ptr<filesystem> impl, Path mountpoint);
   virtual ~Fuse();
 
   bool is_mounted() const;
@@ -21,7 +21,7 @@ class Fuse {
   void run();
 
  private:
-  std::shared_ptr<FileSystem> pImpl;
+  std::shared_ptr<filesystem> pImpl;
   bool is_mounted_;
   const Path mountpoint_;
   fuse_chan* channel_;
