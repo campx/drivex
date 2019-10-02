@@ -7,8 +7,9 @@ namespace drivex {
 
 class FileStatus {
  public:
-  explicit FileStatus(FileType file_type,
-                      Permissions permissions = Permissions::perms_not_known) noexcept;
+  explicit FileStatus(
+      FileType file_type,
+      Permissions permissions = Permissions::perms_not_known) noexcept;
 
   explicit FileStatus(unsigned int mode);
 
