@@ -68,14 +68,21 @@ install(DIRECTORY drivex DESTINATION include
         PATTERN "examples/*" EXCLUDE
         PATTERN "examples" EXCLUDE)
 
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+        "${drivex_SOURCE_DIR}/cmake/drivexConfig.cmake"
+        "${drivex_BINARY_DIR}/drivexConfig.cmake"
+        INSTALL_DESTINATION share/cmake/drivex
+)
+
 if (BUILD_TESTING)
     find_package(GTest MODULE REQUIRED)
-    add_executable(TestFuse drivex/test/TestFuse.cpp)
-    target_link_libraries(TestFuse PRIVATE libdrivex GTest::GTest GTest::Main)
-    gtest_discover_tests(TestFuse)
+    add_executable(fuse_test drivex/test/fuse_test.cpp)
+    target_link_libraries(fuse_test PRIVATE libdrivex GTest::GTest GTest::Main)
+    gtest_discover_tests(fuse_test)
     if (MSVC)
-        target_compile_options(TestFuse PRIVATE /W4 /WX /MP)
+        target_compile_options(fuse_test PRIVATE /W4 /WX /MP)
     else ()
-        target_compile_options(TestFuse PRIVATE -Wall -Wextra -pedantic -Werror)
+        target_compile_options(fuse_test PRIVATE -Wall -Wextra -pedantic -Werror)
     endif ()
 endif ()
