@@ -9,7 +9,6 @@ option(BUILD_TESTING "Build unit tests" ON)
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(libdrivex STATIC
         drivex/directory_entry.cpp
@@ -28,6 +27,11 @@ add_library(libdrivex STATIC
         drivex/file_status.h
         drivex/error_code.cpp
         drivex/error_code.h)
+
+target_include_directories(libdrivex PUBLIC
+        $<BUILD_INTERFACE:${drivex_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
+        $<INSTALL_INTERFACE:include>)
 
 set_target_properties(libdrivex PROPERTIES
         OUTPUT_NAME drivex
