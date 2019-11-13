@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(drivex)
+project(drivex VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 14)
@@ -31,6 +31,7 @@ add_library(libdrivex STATIC
 target_include_directories(libdrivex PUBLIC
         $<BUILD_INTERFACE:${drivex_SOURCE_DIR}>
         $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
 set_target_properties(libdrivex PROPERTIES
@@ -50,18 +51,22 @@ if (WIN32)
     add_subdirectory(thirdparty/dokany)
     add_dependencies(libdrivex dokany)
     target_link_libraries(libdrivex PUBLIC dokanfuse1)
-    target_include_directories(libdrivex PUBLIC
-            ${CMAKE_CURRENT_BINARY_DIR}/include)
     link_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
 endif ()
 
 add_executable(hello drivex/test/Hello.cpp)
 set_target_properties(hello PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 target_link_libraries(hello libdrivex)
-target_include_directories(libdrivex PUBLIC "${drivex_SOURCE_DIR}")
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+        "${drivex_BINARY_DIR}/drivexConfigVersion.cmake"
+        VERSION ${PACKAGE_VERSION}
+        COMPATIBILITY AnyNewerVersion)
 
 install(TARGETS libdrivex
+        EXPORT drivexTargets
+        INCLUDES DESTINATION include
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin)
@@ -78,6 +83,11 @@ configure_package_config_file(
         "${drivex_BINARY_DIR}/drivexConfig.cmake"
         INSTALL_DESTINATION share/cmake/drivex
 )
+
+install(EXPORT drivexTargets DESTINATION share/cmake/drivex)
+install(FILES "${drivex_BINARY_DIR}/drivexConfigVersion.cmake"
+        "${drivex_BINARY_DIR}/drivexConfig.cmake"
+        DESTINATION share/cmake/drivex)
 
 if (BUILD_TESTING)
     find_package(GTest MODULE REQUIRED)
